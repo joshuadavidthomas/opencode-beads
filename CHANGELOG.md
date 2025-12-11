@@ -20,6 +20,14 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [0.29.0]
 
+### Added
+
+- Initial release of beads issue tracker integration for OpenCode
+- Automatic context injection via `bd prime` on session start and after compaction
+- CLI guidance for mapping beads MCP tools to `bd` CLI commands
+- Dynamic command loading from vendor directory (available as `/bd-*` commands)
+- `beads-task-agent` subagent for autonomous issue completion
+
 ### New Contributors
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
