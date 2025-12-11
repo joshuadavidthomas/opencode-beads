@@ -18,7 +18,7 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
-## [0.29.0]
+## [0.1.0]
 
 ### Added
 
@@ -32,5 +32,5 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.29.0...HEAD
-[0.29.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.29.0
+[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
