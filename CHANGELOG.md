@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.1.0]
+
 ### Fixed
 
 - Fixed duplicate context injection caused by plugin being loaded twice due to having both named and default exports
@@ -36,5 +38,6 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.1.1...HEAD
 [0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
+[0.1.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.1
