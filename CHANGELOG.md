@@ -18,11 +18,13 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.1.2]
+
 ### Fixed
 
 - Fixed context injection being skipped when other plugins inject messages first by checking for actual `<beads-context>` tag instead of just message count
 
-## [0.1.0]
+## [0.1.1]
 
 ### Fixed
 
@@ -42,6 +44,7 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.1.1...HEAD
+[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.1.2...HEAD
 [0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
 [0.1.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.1
+[0.1.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.2
