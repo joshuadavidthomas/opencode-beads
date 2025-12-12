@@ -101,16 +101,25 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       // Skip if already injected this session
       if (injectedSessions.has(sessionID)) return;
 
-      // Check if session already has messages (handles plugin reload/reconnection)
+      // Check if beads-context was already injected (handles plugin reload/reconnection)
       try {
         const existing = await client.session.messages({
           path: { id: sessionID },
-          query: { limit: 1 },
         });
 
-        if (existing.data && existing.data.length > 0) {
-          injectedSessions.add(sessionID);
-          return;
+        if (existing.data) {
+          const hasBeadsContext = existing.data.some(msg => {
+            const parts = (msg as any).parts || (msg.info as any).parts;
+            if (!parts) return false;
+            return parts.some((part: any) =>
+              part.type === 'text' && part.text?.includes('<beads-context>')
+            );
+          });
+
+          if (hasBeadsContext) {
+            injectedSessions.add(sessionID);
+            return;
+          }
         }
       } catch {
         // On error, proceed with injection

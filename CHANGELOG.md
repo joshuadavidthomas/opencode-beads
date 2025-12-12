@@ -18,6 +18,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed context injection being skipped when other plugins inject messages first by checking for actual `<beads-context>` tag instead of just message count
+
 ## [0.1.0]
 
 ### Fixed
