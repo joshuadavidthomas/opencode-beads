@@ -18,6 +18,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed duplicate context injection caused by plugin being loaded twice due to having both named and default exports
+
 ## [0.1.0]
 
 ### Added

@@ -141,5 +141,3 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
     },
   };
 };
-
-export default BeadsPlugin;
