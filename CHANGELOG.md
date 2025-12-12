@@ -18,6 +18,12 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Changed
+
+- Restructured injected guidance from `CLI_GUIDANCE` to `BEADS_GUIDANCE` with clear sections for CLI usage and agent delegation
+- Added explicit criteria for when to delegate multi-step work to `beads-task-agent` vs using `bd` CLI directly
+- Improved CLI command formatting with inline descriptions
+
 ## [0.1.2]
 
 ### Fixed
