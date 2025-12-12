@@ -10,7 +10,7 @@
  */
 
 import type { Plugin, PluginInput } from "@opencode-ai/plugin";
-import { CLI_GUIDANCE, loadAgent, loadCommands } from "./vendor";
+import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
 
 type OpencodeClient = PluginInput["client"];
 
@@ -70,7 +70,7 @@ async function injectBeadsContext(
 ${primeOutput.trim()}
 </beads-context>
 
-${CLI_GUIDANCE}`;
+${BEADS_GUIDANCE}`;
 
     // Inject content via noReply + synthetic
     // Must pass model and agent to prevent mode/model switching

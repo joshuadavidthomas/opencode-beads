@@ -84,26 +84,36 @@ async function listVendorFiles(relativePath: string): Promise<string[]> {
   }
 }
 
-export const CLI_GUIDANCE = `<beads-cli-guidance>
-Beads MCP tools are not available. Use the \`bd\` CLI via bash instead:
+export const BEADS_GUIDANCE = `<beads-guidance>
+## CLI Usage
 
-- \`init\` → \`bd init [prefix]\`
-- \`ready\` → \`bd ready --json\`
-- \`show\` → \`bd show <id> --json\`
-- \`create\` → \`bd create "title" -t bug|feature|task -p 0-4 --json\`
-- \`update\` → \`bd update <id> --status in_progress --json\`
-- \`close\` → \`bd close <id> --reason "message" --json\`
-- \`reopen\` → \`bd reopen <id> --json\`
-- \`dep\` → \`bd dep add <from> <to> --type blocks|discovered-from --json\`
-- \`list\` → \`bd list --status open --json\`
-- \`blocked\` → \`bd blocked --json\`
-- \`stats\` → \`bd stats --json\`
-- \`sync\` → \`bd sync\`
+Use the \`bd\` CLI via bash for beads operations:
 
-MCP tools map directly to bd CLI commands. If a tool is not listed above, try \`bd <tool> --help\`.
+- \`bd init [prefix]\` - Initialize beads
+- \`bd ready --json\` - List ready tasks
+- \`bd show <id> --json\` - Show task details
+- \`bd create "title" -t bug|feature|task -p 0-4 --json\` - Create issue
+- \`bd update <id> --status in_progress --json\` - Update status
+- \`bd close <id> --reason "message" --json\` - Close issue
+- \`bd reopen <id> --json\` - Reopen issue
+- \`bd dep add <from> <to> --type blocks|discovered-from --json\` - Add dependency
+- \`bd list --status open --json\` - List issues
+- \`bd blocked --json\` - Show blocked issues
+- \`bd stats --json\` - Show statistics
+- \`bd sync\` - Sync with git
 
 Always use \`--json\` flag for structured output.
-</beads-cli-guidance>`;
+
+## Agent Delegation
+
+For multi-step beads work, use the \`task\` tool with \`subagent_type: "beads-task-agent"\`:
+- Finding and completing ready work autonomously
+- Working through multiple issues in sequence
+- Tasks involving claiming, executing, and closing issues
+- When asked to "work on beads issues", "complete tasks", or similar
+
+For single, specific operations (check status, create one issue, query info), use \`bd\` CLI directly.
+</beads-guidance>`;
 
 export async function loadAgent(): Promise<Config["agent"]> {
   const content = await readVendorFile("agents/task-agent.md");
@@ -118,7 +128,7 @@ export async function loadAgent(): Promise<Config["agent"]> {
   return {
     "beads-task-agent": {
       description,
-      prompt: CLI_GUIDANCE + "\n" + parsed.body,
+      prompt: BEADS_GUIDANCE + "\n" + parsed.body,
       mode: "subagent",
     },
   };
