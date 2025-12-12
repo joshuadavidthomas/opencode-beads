@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.2.0]
+
 ### Changed
 
 - Enhanced beads guidance with agent delegation section to help models automatically use `beads-task-agent` for multi-step work
@@ -53,3 +55,4 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 [0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
 [0.1.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.1
 [0.1.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.2
+[0.2.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.0
