@@ -87,6 +87,8 @@ async function listVendorFiles(relativePath: string): Promise<string[]> {
 export const BEADS_GUIDANCE = `<beads-guidance>
 ## CLI Usage
 
+**Note:** Beads MCP tools are not available in this environment. Use the \`bd\` CLI via bash instead. MCP tool names map directly to \`bd\` commands.
+
 Use the \`bd\` CLI via bash for beads operations:
 
 - \`bd init [prefix]\` - Initialize beads
@@ -101,6 +103,8 @@ Use the \`bd\` CLI via bash for beads operations:
 - \`bd blocked --json\` - Show blocked issues
 - \`bd stats --json\` - Show statistics
 - \`bd sync\` - Sync with git
+
+If a tool is not listed above, try \`bd <tool> --help\`.
 
 Always use \`--json\` flag for structured output.
 
