@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.2.1]
+
 ### Changed
 
 - Strengthened agent delegation guidance to default to using `beads-task-agent` for any multi-command or context-gathering work
