@@ -18,6 +18,14 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Changed
+
+- Strengthened agent delegation guidance to default to using `beads-task-agent` for any multi-command or context-gathering work
+- Added explicit guidance for status overview queries ("what's next", "what's blocked") to use the agent instead of running multiple `bd` commands
+- Split guidance into session-specific (when to delegate) and subagent-specific (how to behave) contexts
+- Added subagent awareness instructions explaining that final message is returned to calling agent
+- Added output format guidance for subagent to return concise summaries instead of raw JSON dumps
+
 ## [0.2.0]
 
 ### Changed
