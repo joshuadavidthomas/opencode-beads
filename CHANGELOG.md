@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.2.2]
+
 ### Changed
 
 - Bumped beads version to 0.30.3
@@ -65,8 +67,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.2.2...HEAD
 [0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
 [0.1.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.1
 [0.1.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.2
 [0.2.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.0
+[0.2.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.1
+[0.2.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.2
