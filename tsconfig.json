@@ -1,4 +1,6 @@
 {
+  "include": ["src/**/*", "vendor/**/*"],
+  "exclude": ["opencode", "node_modules"],
   "compilerOptions": {
     // Environment setup & latest features
     "lib": ["ESNext"],
