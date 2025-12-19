@@ -9,8 +9,9 @@
  * - Task agent for autonomous issue completion
  */
 
-import type { Plugin, PluginInput } from "@opencode-ai/plugin";
+import { type Plugin, type PluginInput } from "@opencode-ai/plugin";
 import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
+import { syncTodosToBeads } from "./todo-sync";
 
 type OpencodeClient = PluginInput["client"];
 
@@ -144,9 +145,24 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       }
     },
 
+    // Native tool handles Storage/Bus. We just sync to beads for persistence.
+    "tool.execute.after": (input, output) => {
+      if (input.tool === "todowrite") {
+        const todos = output.metadata?.todos;
+        if (Array.isArray(todos)) {
+          // Fire and forget - don't await, truly non-blocking
+          syncTodosToBeads($, input.sessionID, todos).catch(() => {});
+        }
+      }
+      // Return immediately-resolved promise to satisfy TypeScript
+      return Promise.resolve();
+    },
+
     config: async (config) => {
       config.command = { ...config.command, ...commands };
       config.agent = { ...config.agent, ...agents };
     },
+
+    tool: {},
   };
 };
