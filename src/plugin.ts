@@ -156,7 +156,7 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
             // Mutate the output object to populate metadata and title
             // This works because the object is passed by reference and returned after this hook
             output.metadata = { todos };
-            output.title = `${todos.filter((t: any) => t.status !== "completed").length} todos`;
+            output.title = `[BEADS] ${todos.filter((t: any) => t.status !== "completed").length} todos`;
           }
         } catch {
           // If parsing fails, leave as-is (might be an error message)
