@@ -108,12 +108,37 @@ async function loadMapping(): Promise<TodoBeadsMapping> {
 }
 
 /**
+ * Ensure a file is in .gitignore of a directory
+ */
+async function ensureGitignoreEntry(dir: string, filename: string): Promise<void> {
+  const gitignorePath = path.join(dir, ".gitignore");
+  try {
+    const content = await fs.readFile(gitignorePath, "utf-8");
+    const lines = content.split("\n");
+    if (lines.some(line => line.trim() === filename)) {
+      return;
+    }
+    const newContent = content.endsWith("\n") ? content + filename + "\n" : content + "\n" + filename + "\n";
+    await fs.writeFile(gitignorePath, newContent);
+  } catch {
+    await fs.writeFile(gitignorePath, filename + "\n");
+  }
+}
+
+/**
  * Save the todo-beads mapping to disk
  */
 async function saveMapping(mapping: TodoBeadsMapping): Promise<void> {
   mapping.lastSync = Date.now();
   const dir = path.dirname(MAPPING_FILE);
   await fs.mkdir(dir, { recursive: true });
+  
+  // Only ensure gitignore entry on initial file creation
+  const fileExists = await fs.access(MAPPING_FILE).then(() => true).catch(() => false);
+  if (!fileExists) {
+    await ensureGitignoreEntry(dir, path.basename(MAPPING_FILE));
+  }
+  
   await fs.writeFile(MAPPING_FILE, JSON.stringify(mapping, null, 2));
 }
 
@@ -134,7 +159,7 @@ async function getOrCreateSessionIssue(
     // Verify it still exists
     try {
       const result = await $`bd show ${mapping.sessions[sessionID]} --json`.json();
-      if (result && result.id) {
+      if (Array.isArray(result) && result[0]?.id) {
         return mapping.sessions[sessionID];
       }
     } catch {
@@ -355,77 +380,4 @@ function beadsIssueToTodo(todoID: string, issue: BeadsIssue): TodoItem {
   };
 }
 
-// =============================================================================
-// Tool Definitions
-// =============================================================================
 
-/**
- * Create the todowrite tool override
- *
- * This tool syncs todos to beads while returning the exact format
- * expected by OpenCode's ACP for sidebar compatibility.
- *
- * NOTE: Plugin tools are wrapped by fromPlugin() which sets:
- *   { title: "", output: <our return value>, metadata: {} }
- * The ACP parses part.state.output directly as JSON array of todos.
- * So we return JSON.stringify(todos) - not a wrapped object.
- */
-export function createTodoWriteTool($: BunShell) {
-  return tool({
-    description: `Use this tool to create and manage a structured task list for your current coding session. This helps you track progress, organize complex tasks, and demonstrate thoroughness to the user.
-It also helps the user understand the progress of the task and overall progress of their requests.
-
-This version syncs todos to beads for persistence across sessions.`,
-    args: {
-      todos: tool.schema
-        .array(
-          tool.schema.object({
-            content: tool.schema.string().describe("Brief description of the task"),
-            status: tool.schema
-              .string()
-              .describe(
-                "Current status of the task: pending, in_progress, completed, cancelled"
-              ),
-            priority: tool.schema
-              .string()
-              .describe("Priority level of the task: high, medium, low"),
-            id: tool.schema
-              .string()
-              .describe("Unique identifier for the todo item"),
-          })
-        )
-        .describe("The updated todo list"),
-    },
-    async execute(params, ctx) {
-      const todos = params.todos as TodoItem[];
-
-      // Sync to beads (fire and forget to not block the tool response)
-      // Errors are silently ignored - beads sync is best-effort
-      syncTodosToBeads($, ctx.sessionID, todos).catch(() => {});
-
-      // Return JSON array of todos - this becomes part.state.output
-      // which the ACP parses directly for sidebar display
-      return JSON.stringify(todos, null, 2);
-    },
-  });
-}
-
-/**
- * Create the todoread tool override
- *
- * This tool reads from beads as the source of truth.
- *
- * NOTE: Same return format as todowrite - just the JSON array of todos.
- */
-export function createTodoReadTool($: BunShell) {
-  return tool({
-    description: "Use this tool to read your todo list",
-    args: {},
-    async execute(_params, ctx) {
-      const todos = await readTodosFromBeads($, ctx.sessionID);
-
-      // Return JSON array of todos
-      return JSON.stringify(todos, null, 2);
-    },
-  });
-}

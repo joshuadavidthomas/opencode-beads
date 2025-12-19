@@ -9,9 +9,9 @@
  * - Task agent for autonomous issue completion
  */
 
-import { tool, type Plugin, type PluginInput } from "@opencode-ai/plugin";
+import { type Plugin, type PluginInput } from "@opencode-ai/plugin";
 import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
-import { createTodoWriteTool, createTodoReadTool } from "./todo-sync";
+import { syncTodosToBeads } from "./todo-sync";
 
 type OpencodeClient = PluginInput["client"];
 
@@ -145,23 +145,17 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       }
     },
 
-    // Fix up metadata for todowrite/todoread so TUI sidebar renders correctly.
-    // Plugin tools return { title: "", output: string, metadata: {} } via fromPlugin wrapper.
-    // The TUI checks metadata.todos to render the todo list. We populate it here.
-    "tool.execute.after": async (input, output) => {
-      if (input.tool === "todowrite" || input.tool === "todoread") {
-        try {
-          const todos = JSON.parse(output.output);
-          if (Array.isArray(todos)) {
-            // Mutate the output object to populate metadata and title
-            // This works because the object is passed by reference and returned after this hook
-            output.metadata = { todos };
-            output.title = `${todos.filter((t: any) => t.status !== "completed").length} todos`;
-          }
-        } catch {
-          // If parsing fails, leave as-is (might be an error message)
+    // Native tool handles Storage/Bus. We just sync to beads for persistence.
+    "tool.execute.after": (input, output) => {
+      if (input.tool === "todowrite") {
+        const todos = output.metadata?.todos;
+        if (Array.isArray(todos)) {
+          // Fire and forget - don't await, truly non-blocking
+          syncTodosToBeads($, input.sessionID, todos).catch(() => {});
         }
       }
+      // Return immediately-resolved promise to satisfy TypeScript
+      return Promise.resolve();
     },
 
     config: async (config) => {
@@ -169,62 +163,6 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       config.agent = { ...config.agent, ...agents };
     },
 
-    // Override todowrite/todoread to sync with beads
-    tool: {
-      todowrite: createTodoWriteTool($),
-      todoread: createTodoReadTool($),
-      
-      // Keep test tool for debugging
-      test_opencode_imports: tool({
-        description: "Test what OpenCode internals we can import at runtime",
-        args: {},
-        async execute() {
-          const results: string[] = [];
-
-          // Test 1: Try importing Todo from opencode (the actual package name)
-          try {
-            // @ts-expect-error - runtime import, not available at compile time
-            const todo = await import("opencode/session/todo");
-            results.push(`✓ opencode/session/todo: ${Object.keys(todo).join(", ")}`);
-            
-            // If we got here, try to check if Todo.update exists
-            if (todo.Todo && typeof todo.Todo.update === "function") {
-              results.push(`  ✓ Todo.update is a function!`);
-            }
-          } catch (e: any) {
-            results.push(`✗ opencode/session/todo: ${e.message}`);
-          }
-
-          // Test 2: Try the scoped package name as fallback
-          try {
-            // @ts-expect-error - runtime import, not available at compile time
-            const todo = await import("@opencode-ai/opencode/session/todo");
-            results.push(`✓ @opencode-ai/opencode/session/todo: ${Object.keys(todo).join(", ")}`);
-          } catch (e: any) {
-            results.push(`✗ @opencode-ai/opencode/session/todo: ${e.message}`);
-          }
-
-          // Test 3: Try importing the main package
-          try {
-            // @ts-expect-error - runtime import, not available at compile time
-            const opencode = await import("opencode");
-            results.push(`✓ opencode: ${Object.keys(opencode).slice(0, 10).join(", ")}...`);
-          } catch (e: any) {
-            results.push(`✗ opencode: ${e.message}`);
-          }
-
-          // Test 4: Check if we can find the module in require.cache or similar
-          try {
-            // @ts-ignore - checking runtime environment
-            const modules = Object.keys(require.cache || {}).filter(k => k.includes("todo"));
-            results.push(`Cached modules with 'todo': ${modules.length > 0 ? modules.slice(0, 3).join(", ") : "none"}`);
-          } catch (e: any) {
-            results.push(`Cache check: ${e.message}`);
-          }
-
-          return results.join("\n");
-        },
-      }),
-    },
+    tool: {},
   };
 };
