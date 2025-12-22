@@ -23,7 +23,7 @@ mkdir -p "$PLUGIN_DIR/vendor/agents"
 cp "$TEMP_DIR/beads/.claude-plugin/agents/task-agent.md" "$PLUGIN_DIR/vendor/agents/"
 
 if [ -z "$(git -C "$PLUGIN_DIR" status --porcelain)" ]; then
-  echo "Already synced to $BEADS_VERSION"
+  echo "No changes detected"
   exit 0
 fi
 
