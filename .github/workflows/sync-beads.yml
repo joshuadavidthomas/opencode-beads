@@ -2,8 +2,8 @@ name: sync-beads
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Daily at 9am UTC
-  workflow_dispatch:      # Allow manual trigger
+    - cron: '0 9 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -13,8 +13,8 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Sync beads and create PR if needed
+
+      - name: Sync beads
         run: ./scripts/sync-beads.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
