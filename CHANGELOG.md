@@ -18,6 +18,16 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.3.0]
+
+### Added
+
+- `/bd-audit` command synced from upstream beads project
+
+### Changed
+
+- Bumped beads version to 0.33.3
+
 ## [0.2.2]
 
 ### Changed
@@ -67,10 +77,11 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.2.2...HEAD
+[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.3.0...HEAD
 [0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
 [0.1.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.1
 [0.1.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.2
 [0.2.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.0
 [0.2.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.1
 [0.2.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.2.2
+[0.3.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.3.0
