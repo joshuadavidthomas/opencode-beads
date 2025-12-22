@@ -27,14 +27,6 @@ if git -C "$PLUGIN_DIR" diff --quiet; then
   exit 0
 fi
 
-if command -v gh &> /dev/null; then
-  EXISTING_PRS=$(gh pr list --search "sync: beads $BEADS_VERSION in:title" --json number --jq 'length' 2>/dev/null || echo "0")
-  if [ "$EXISTING_PRS" -gt 0 ]; then
-    echo "PR already exists for $BEADS_VERSION"
-    exit 0
-  fi
-fi
-
 CHANGELOG="$PLUGIN_DIR/CHANGELOG.md"
 
 if sed -n '/^## \[Unreleased\]$/,/^## \[/p' "$CHANGELOG" | grep -q "^### Changed$"; then
@@ -56,13 +48,16 @@ if $DRY_RUN; then
   exit 0
 fi
 
-BRANCH="sync-beads-$BEADS_VERSION"
+BRANCH="sync-beads"
 
-git -C "$PLUGIN_DIR" checkout -b "$BRANCH"
+git -C "$PLUGIN_DIR" checkout -B "$BRANCH"
 git -C "$PLUGIN_DIR" add -A
 git -C "$PLUGIN_DIR" commit -m "sync: beads $BEADS_VERSION"
-git -C "$PLUGIN_DIR" push -u origin "$BRANCH"
+git -C "$PLUGIN_DIR" push -f origin "$BRANCH"
 
-gh pr create \
-  --title "sync: beads $BEADS_VERSION" \
-  --body "Automated sync of vendored beads files to $BEADS_VERSION"
+if command -v gh &> /dev/null; then
+  gh pr list --head "$BRANCH" --json number --jq 'length' | grep -q '^0$' && \
+    gh pr create \
+      --title "sync: beads $BEADS_VERSION" \
+      --body "Automated sync of vendored beads files to $BEADS_VERSION" || true
+fi
