@@ -22,7 +22,7 @@ cp -r "$TEMP_DIR/beads/commands" "$PLUGIN_DIR/vendor/commands"
 mkdir -p "$PLUGIN_DIR/vendor/agents"
 cp "$TEMP_DIR/beads/.claude-plugin/agents/task-agent.md" "$PLUGIN_DIR/vendor/agents/"
 
-if git -C "$PLUGIN_DIR" diff --quiet; then
+if [ -z "$(git -C "$PLUGIN_DIR" status --porcelain)" ]; then
   echo "Already synced to $BEADS_VERSION"
   exit 0
 fi
@@ -44,7 +44,7 @@ fi
 
 if $DRY_RUN; then
   echo "[dry-run] Would create PR for $BEADS_VERSION"
-  git -C "$PLUGIN_DIR" diff
+  git -C "$PLUGIN_DIR" status --short
   exit 0
 fi
 
