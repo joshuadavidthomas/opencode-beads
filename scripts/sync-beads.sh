@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-BEADS_VERSION="v0.30.3"
+BEADS_VERSION="v0.33.2"
 
 BEADS_REPO="https://github.com/steveyegge/beads.git"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
