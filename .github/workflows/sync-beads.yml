@@ -14,12 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Sync beads
+        id: sync
         run: ./scripts/sync-beads.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        if: steps.sync.outputs.beads_version
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync-beads
+          title: "sync: beads ${{ steps.sync.outputs.beads_version }}"
+          body: "Automated sync of vendored beads files to ${{ steps.sync.outputs.beads_version }}"
+          commit-message: "sync: beads ${{ steps.sync.outputs.beads_version }}"
