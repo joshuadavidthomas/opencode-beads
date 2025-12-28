@@ -16,13 +16,21 @@ Add to your OpenCode config (`~/.config/opencode/opencode.json`):
 
 ```json
 {
-  "plugin": ["opencode-beads@0.3.2"]
+  "plugin": ["opencode-beads"]
 }
 ```
 
 Restart OpenCode and you're ready to go.
 
-Pin to a specific version to ensure updates work correctly - OpenCode's lockfile won't re-resolve unpinned versions. To upgrade, change the version and restart.
+Optionally, pin to a specific version for stability:
+
+```json
+{
+  "plugin": ["opencode-beads@0.3.2"]
+}
+```
+
+OpenCode fetches unpinned plugins from npm on each startup; pinned versions are cached and require a manual version bump to update.
 
 ## Features
 
