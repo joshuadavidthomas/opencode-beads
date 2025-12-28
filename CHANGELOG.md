@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.3.2]
+
 ### Changed
 
 - Synced vendored beads files to v0.39.1
@@ -87,7 +89,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.3.1...HEAD
+[unreleased]: https://github.com/joshuadavidthomas/opencode-beads/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.3.2
 [0.1.0]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.0
 [0.1.1]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.1
 [0.1.2]: https://github.com/joshuadavidthomas/opencode-beads/releases/tag/v0.1.2

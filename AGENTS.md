@@ -32,11 +32,12 @@
 If the user specifies a version number (e.g., "bump to 0.4.0") or bump type (major/minor/patch), use that. Otherwise:
 
 1. Find the current version in `package.json`
-2. Get commits since last release: `git log v<current>..HEAD --oneline`
-3. **Read the actual diffs** - don't rely solely on commit messages:
+2. Fetch tags from remote: `git fetch origin --tags`
+3. Get commits since last release: `git log v<current>..HEAD --oneline`
+4. **Read the actual diffs** - don't rely solely on commit messages:
    - `git diff v<current>..HEAD -- src/` for source changes
    - `git diff v<current>..HEAD -- vendor/` for vendor syncs
-4. Apply semver:
+5. Apply semver:
    - **patch** (0.0.x): Bug fixes, dependency updates, vendor syncs with no breaking changes
    - **minor** (0.x.0): New features, new commands, non-breaking enhancements
    - **major** (x.0.0): Breaking changes to plugin API or behavior
