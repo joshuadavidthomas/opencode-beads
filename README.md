@@ -16,7 +16,7 @@ Add to your OpenCode config (`~/.config/opencode/opencode.json`):
 
 ```json
 {
-  "plugin": ["opencode-beads@0.3.0"]
+  "plugin": ["opencode-beads@0.3.1"]
 }
 ```
 

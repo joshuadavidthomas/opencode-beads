@@ -23,6 +23,49 @@
 - This is an OpenCode plugin integrating the beads issue tracker
 - Vendor files are synced via `scripts/sync-beads.sh` - don't edit directly
 
+## Releasing a New Version
+
+**Triggers**: User says "bump the version", "cut a new release", "release a new version", "let's do a release", or similar.
+
+### Determining the Version
+
+If the user specifies a version number (e.g., "bump to 0.4.0") or bump type (major/minor/patch), use that. Otherwise:
+
+1. Find the current version in `package.json`
+2. Get commits since last release: `git log v<current>..HEAD --oneline`
+3. **Read the actual diffs** - don't rely solely on commit messages:
+   - `git diff v<current>..HEAD -- src/` for source changes
+   - `git diff v<current>..HEAD -- vendor/` for vendor syncs
+4. Apply semver:
+   - **patch** (0.0.x): Bug fixes, dependency updates, vendor syncs with no breaking changes
+   - **minor** (0.x.0): New features, new commands, non-breaking enhancements
+   - **major** (x.0.0): Breaking changes to plugin API or behavior
+
+### Files to Update
+
+1. **`package.json`** - Update `"version"` field
+2. **`CHANGELOG.md`**:
+   - Move content from `## [Unreleased]` to new version section
+   - Add new version heading: `## [X.Y.Z]`
+   - Update `[unreleased]` compare link at bottom to compare from new version
+   - Add new version release link at the end of the reference links list
+3. **`README.md`** - Update version in the installation example JSON
+
+### Commit Convention
+
+Use this exact format:
+```
+:bookmark: bump version X.Y.Z -> A.B.C
+```
+
+### Checklist
+
+- [ ] All three files updated with consistent version
+- [ ] CHANGELOG has actual changes listed (not empty)
+- [ ] CHANGELOG links point to correct versions
+- [ ] Single commit with all version bump changes
+- [ ] User will cut the GitHub release after merge
+
 ## Issue Tracking with bd (beads)
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
