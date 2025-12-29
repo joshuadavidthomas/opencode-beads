@@ -9,7 +9,8 @@ BEADS_REPO="https://github.com/steveyegge/beads.git"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_DIR="$(dirname "$SCRIPT_DIR")"
 
-BEADS_VERSION=$(git ls-remote --tags --refs --sort=-v:refname "$BEADS_REPO" | head -1 | sed 's/.*\///')
+TAGS=$(git ls-remote --tags --refs --sort=-v:refname "$BEADS_REPO")
+BEADS_VERSION=$(echo "$TAGS" | head -1 | sed 's/.*\///')
 
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
