@@ -26,7 +26,7 @@ Optionally, pin to a specific version for stability:
 
 ```json
 {
-  "plugin": ["opencode-beads@0.3.2"]
+  "plugin": ["opencode-beads@0.4.0"]
 }
 ```
 
