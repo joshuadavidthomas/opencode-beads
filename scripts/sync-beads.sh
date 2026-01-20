@@ -18,10 +18,10 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 git clone --depth 1 --branch "$BEADS_VERSION" --quiet "$BEADS_REPO" "$TEMP_DIR/beads"
 
 rm -rf "$PLUGIN_DIR/vendor/commands"
-cp -r "$TEMP_DIR/beads/commands" "$PLUGIN_DIR/vendor/commands"
+cp -r "$TEMP_DIR/beads/claude-plugin/commands" "$PLUGIN_DIR/vendor/commands"
 
 mkdir -p "$PLUGIN_DIR/vendor/agents"
-cp "$TEMP_DIR/beads/.claude-plugin/agents/task-agent.md" "$PLUGIN_DIR/vendor/agents/"
+cp "$TEMP_DIR/beads/claude-plugin/agents/task-agent.md" "$PLUGIN_DIR/vendor/agents/"
 
 if [ -z "$(git -C "$PLUGIN_DIR" status --porcelain)" ]; then
   echo "No changes detected"
