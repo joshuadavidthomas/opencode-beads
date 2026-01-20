@@ -18,10 +18,14 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
-### Changed
-- Synced vendored beads files to v0.48.0
+### Breaking
 
-- Clarified bash tool usage for bd commands and renamed command prefix to `beads:`
+- Renamed command prefix from `bd-` to `beads:`, tracking upstream Claude Code plugin
+
+### Changed
+
+- Synced vendored beads files to v0.48.0
+- Clarified `bash` tool usage for `bd` CLI commands
 - Synced vendored beads files
 
 ### Fixed
