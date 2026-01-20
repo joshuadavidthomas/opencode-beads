@@ -18,6 +18,16 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Changed
+
+- Clarified bash tool usage for bd commands and renamed command prefix to `beads:`
+- Synced vendored beads files
+
+### Fixed
+
+- Fixed `sync-beads.sh` script to handle new upstream directory structure
+- Fixed SIGPIPE exit code 141 issues in `sync-beads.sh` script
+
 ## [0.3.2]
 
 ### Changed
