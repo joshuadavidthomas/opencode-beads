@@ -86,9 +86,12 @@ async function listVendorFiles(relativePath: string): Promise<string[]> {
 
 const BEADS_CLI_USAGE = `## CLI Usage
 
-**Note:** Beads MCP tools are not available in this environment. Use the \`bd\` CLI via bash instead. MCP tool names map directly to \`bd\` commands.
+**IMPORTANT:** There is no \`bd\` tool in this environment. You must use the \`bash\` tool to run the \`bd\` command.
 
-Use the \`bd\` CLI via bash for beads operations:
+**Do not try to call a tool named \`bd\` directly.** It does not exist.
+**Do not try to call MCP tools (like \`ready\`, \`create\`) directly.** They do not exist.
+
+Instead, use the \`bash\` tool for all beads operations:
 
 - \`bd init [prefix]\` - Initialize beads
 - \`bd ready --json\` - List ready tasks
@@ -180,7 +183,7 @@ export async function loadCommands(): Promise<Config["command"]> {
     const parsed = parseMarkdownWithFrontmatter(content);
     if (!parsed) continue;
 
-    const name = `bd-${file.replace(".md", "")}`;
+    const name = `beads:${file.replace(".md", "")}`;
 
     const argHint = parsed.frontmatter["argument-hint"];
     const baseDescription = parsed.frontmatter.description ?? name;
