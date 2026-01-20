@@ -19,6 +19,7 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 ## [Unreleased]
 
 ### Changed
+- Synced vendored beads files to v0.48.0
 
 - Clarified bash tool usage for bd commands and renamed command prefix to `beads:`
 - Synced vendored beads files
