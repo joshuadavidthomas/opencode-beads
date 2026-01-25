@@ -146,7 +146,7 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
 
     config: async (config) => {
       config.command = { ...config.command, ...commands };
-      config.agent = { ...config.agent, ...agents };
+      config.agent = { ...agents, ...config.agent };
     },
   };
 };
