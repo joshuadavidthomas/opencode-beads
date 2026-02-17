@@ -19,7 +19,10 @@
   "main": "src/plugin.ts",
   "files": ["src", "vendor", "README.md"],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "validate": "bun run scripts/validate-plugin.ts"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.143",
@@ -29,7 +32,9 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
-    "typescript": "~5.9.3"
+    "@vitest/coverage-v8": "^3.0.0",
+    "typescript": "~5.9.3",
+    "vitest": "^3.0.0"
   },
   "engines": {
     "bun": ">=1.0.0"

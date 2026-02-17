@@ -20,7 +20,7 @@ interface ParsedMarkdown {
   body: string;
 }
 
-function parseMarkdownWithFrontmatter(content: string): ParsedMarkdown | null {
+export function parseMarkdownWithFrontmatter(content: string): ParsedMarkdown | null {
   const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
   const match = content.match(frontmatterRegex);
 
