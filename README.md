@@ -34,9 +34,48 @@ OpenCode fetches unpinned plugins from npm on each startup; pinned versions are 
 
 ## Features
 
-- **Context injection** - Automatically runs `bd prime` on session start and after compaction, keeping your agent aware of current issues
-- **Commands** - All beads operations available as `/bd-*` commands
-- **Task agent** - Autonomous issue completion via `beads-task-agent` subagent
+- **Context Injection** - Automatically runs `bd prime` on session start and after compaction, keeping your agent aware of current issues
+- **Auto-Flush After Mutations** - Immediately syncs changes to `.beads/issues.jsonl` after create, update, close, and other mutating commands
+- **33+ Commands** - All beads operations available as `beads:*` commands
+- **RFC 2119 Description Standards** - Enforces comprehensive issue descriptions with required sections (Context, Requirements, Guardrails, Dos and Don'ts, Acceptance Criteria, Validation)
+- **Structured Logging** - Debug and health monitoring via OpenCode's logging system
+- **Health Checks** - Validates beads CLI installation on plugin load
+
+## Agents
+
+This plugin provides specialized subagents for different beads workflows:
+
+### beads:task-agent
+
+The default agent for complex multi-issue workflows. Use for:
+- Status overviews ("what's next", "what's blocked")
+- Exploring the issue graph
+- Finding and completing ready work
+- Working through multiple issues in sequence
+- Any request requiring 2+ bd commands
+
+### beads:query-agent
+
+Read-only agent for exploration and reporting. Use for:
+- Searching and filtering issues
+- Generating reports
+- Answering questions about the issue database
+- Never modifies issues
+
+### beads:cleanup-agent
+
+Maintenance agent for database health. Use for:
+- Finding stale issues
+- Detecting duplicates
+- Running compaction
+- Database health checks
+
+### beads:description-validator
+
+Quality control agent for RFC 2119 compliance. Use for:
+- Validating descriptions before creation
+- Checking RFC 2119 keyword usage (MUST, SHOULD, MAY, etc.)
+- Rejecting non-compliant descriptions
 
 ## Usage
 
@@ -46,13 +85,85 @@ The plugin automatically injects beads context on session start and after compac
 
 ## Commands
 
-Commands are available as `/bd-*` and mirror the `bd` CLI. See the [beads documentation](https://github.com/steveyegge/beads) for the full command reference.
+Commands are available as `beads:*` (e.g., `beads:ready`, `beads:create`, `beads:status`).
 
-## Agent
+### Common Commands
 
-### beads-task-agent
+| Command | Description |
+|---------|-------------|
+| `beads:ready` | Find ready-to-work tasks with no blockers |
+| `beads:create` | Create a new issue with RFC 2119-compliant description |
+| `beads:update` | Update issue status, priority, or other fields |
+| `beads:close` | Close a completed issue |
+| `beads:show` | Show detailed information about an issue |
+| `beads:list` | List issues with optional filters |
+| `beads:blocked` | Show blocked issues and their dependencies |
+| `beads:status` | Show project overview and statistics |
+| `beads:doctor` | Check beads installation health |
+| `beads:query` | Query issues using filter language |
+| `beads:stale` | Find issues not updated recently |
+| `beads:sync` | Synchronize issues with git remote |
 
-A subagent for autonomous issue completion. Designed to work through issues independently, updating status and handling dependencies.
+See the [beads documentation](https://github.com/steveyegge/beads) for the full command reference.
+
+## Example Workflows
+
+### Finding Ready Work
+
+```
+User: "What should I work on?"
+→ Agent runs beads:ready (or bd ready --json)
+→ Returns summary: "You have 3 ready tasks (2 P0, 1 P1), 5 in-progress, 8 blocked"
+```
+
+### Creating an Issue
+
+```
+User: "Create a bug for the login issue"
+→ Agent validates description meets RFC 2119 standards
+→ Runs bd create "Login crashes on special chars" -t bug -p 1
+→ Auto-syncs to JSONL via bd sync --flush-only
+```
+
+### Complex Workflows with Agents
+
+```
+User: "Show me what's blocked and why"
+→ Delegate to beads:query-agent
+→ Agent runs bd blocked --json, bd show for each
+→ Returns human-readable summary with blocker analysis
+```
+
+## Development
+
+### Local Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/joshuadavidthomas/opencode-beads.git
+cd opencode-beads
+bun install
+```
+
+### Running Tests
+
+```bash
+bun run test              # Run unit tests
+bun run test:coverage     # Run with coverage report
+```
+
+### Validation
+
+```bash
+bun run validate          # Validate plugin structure
+```
+
+### Type Checking
+
+```bash
+bun run typecheck         # Run TypeScript type checker
+```
 
 ## License
 
