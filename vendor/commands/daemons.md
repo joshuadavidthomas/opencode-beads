@@ -1,3 +1,8 @@
+---
+description: Manage bd daemon processes across repositories and worktrees
+argument-hint: <list|stop|kill-all>
+---
+
 # bd daemons - Daemon Management
 
 Manage bd daemon processes across all repositories and worktrees.

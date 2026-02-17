@@ -161,6 +161,76 @@ describe("BeadsPlugin", () => {
     });
   });
 
+  describe("error handling", () => {
+    it("should handle flush failure gracefully", async () => {
+      const input = createMockPluginInput();
+      const plugin = await BeadsPlugin(input);
+
+      // Mock shell to throw on quiet()
+      const $ = input.$ as any;
+      const originalQuiet = $.quiet;
+      $.quiet = async () => {
+        throw new Error("Flush failed");
+      };
+
+      // Should not throw even if flush fails
+      await expect(
+        plugin["tool.execute.after"]!(
+          { tool: "bash", sessionID: "test", callID: "call-1" },
+          { title: "Bash", output: 'bd create "Test" -t task', metadata: {} }
+        )
+      ).resolves.not.toThrow();
+
+      // Restore
+      $.quiet = originalQuiet;
+    });
+
+    it("should handle session.messages error gracefully", async () => {
+      const input = createMockPluginInput();
+
+      // Mock session.messages to throw
+      const client = input.client;
+      const originalMessages = client.session.messages;
+      client.session.messages = async () => {
+        throw new Error("Session error");
+      };
+
+      const plugin = await BeadsPlugin(input);
+      const output = createMockChatOutput({ sessionID: "test-session" });
+
+      // Should not throw even if session.messages fails
+      await expect(plugin["chat.message"]!({ sessionID: "test-session" }, output)).resolves.not.toThrow();
+
+      // Restore
+      client.session.messages = originalMessages;
+    });
+
+    it("should skip injection when beads context already exists", async () => {
+      const input = createMockPluginInput();
+
+      // Mock session.messages to return a message with beads-context
+      const client = input.client;
+      (client.session.messages as any) = async () => ({
+        data: [
+          {
+            info: {
+              parts: [{ type: "text", text: "<beads-context>Some context</beads-context>" }],
+            },
+          },
+        ],
+      });
+
+      const plugin = await BeadsPlugin(input);
+      const output = createMockChatOutput({ sessionID: "test-session" });
+
+      // First call
+      await plugin["chat.message"]!({ sessionID: "test-session" }, output);
+
+      // Second call should skip due to existing context
+      await plugin["chat.message"]!({ sessionID: "test-session" }, output);
+    });
+  });
+
   describe("mutating command detection", () => {
     const mutatingCommands = [
       "bd create \"Test\" -t task",

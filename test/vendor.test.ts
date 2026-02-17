@@ -33,6 +33,29 @@ This is the body content.`;
       expect(result).toBeNull();
     });
 
+    it("should return null for frontmatter without trailing newline", () => {
+      // The regex requires a newline after closing ---
+      const content = `---
+description: Test
+---`;
+
+      const result = parseMarkdownWithFrontmatter(content);
+
+      // No trailing newline means no match
+      expect(result).toBeNull();
+    });
+
+    it("should parse frontmatter with empty body but trailing newline", () => {
+      // Frontmatter with trailing newline but no content
+      const content = "---\ndescription: Test\n---\n";
+
+      const result = parseMarkdownWithFrontmatter(content);
+
+      expect(result).not.toBeNull();
+      expect(result?.frontmatter.description).toBe("Test");
+      expect(result?.body).toBe("");
+    });
+
     it("should handle empty frontmatter values", () => {
       const content = `---
 description:

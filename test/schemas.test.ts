@@ -240,6 +240,18 @@ describe("schemas", () => {
       expect(getSchemaForCommand("sync")).toBe(SyncResultSchema);
     });
 
+    it("should return BlockedSchema for blocked command", () => {
+      expect(getSchemaForCommand("blocked")).toBe(BlockedSchema);
+    });
+
+    it("should return StaleSchema for stale command", () => {
+      expect(getSchemaForCommand("stale")).toBe(StaleSchema);
+    });
+
+    it("should return DuplicatesSchema for duplicates command", () => {
+      expect(getSchemaForCommand("duplicates")).toBe(DuplicatesSchema);
+    });
+
     it("should return undefined for unknown command", () => {
       expect(getSchemaForCommand("unknown")).toBeUndefined();
     });

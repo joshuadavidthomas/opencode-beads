@@ -1,3 +1,8 @@
+---
+description: Manage issue templates for streamlined issue creation
+argument-hint: [list|show|create] [template-name]
+---
+
 # bd template
 
 Manage issue templates for streamlined issue creation.
