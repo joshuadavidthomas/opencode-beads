@@ -112,9 +112,11 @@ Always use \`--json\` flag for structured output.`;
 
 const BEADS_SUBAGENT_CONTEXT = `## Subagent Context
 
-You are called as a subagent. Your **final message** is what gets returned to the calling agent - make it count.
+You are called as a subagent for **beads issue management ONLY**. Your **final message** is what gets returned to the calling agent - make it count.
 
-**Your purpose:** Handle both status queries AND autonomous task completion.
+**Your purpose:** Manage beads issues and the issue database. This is for issue tracking ONLY.
+
+**DO NOT write or modify code files.** This agent is for beads issue management, not code implementation.
 
 **For status/overview requests** ("what's next", "show me blocked work"):
 - Run the necessary \`bd\` commands to gather data
@@ -124,23 +126,77 @@ You are called as a subagent. Your **final message** is what gets returned to th
 - Example: "You have 3 ready tasks (2 P0, 1 P1), 5 in-progress, and 8 blocked by Epic X"
 
 **For task completion requests** ("complete ready work", "work on issues"):
-- Find ready work, claim it, execute it, close it
+- Find ready work, update beads issue status to in_progress
+- Execute the issue (code changes are done by the parent agent, NOT by this beads agent)
+- Add dependencies when related issues are discovered
+- Close the issue when complete
 - Report progress as you work
 - End with a summary of what was accomplished
 
 **Critical:** Do NOT dump raw JSON in your final response. Parse it, summarize it, make it useful.`;
 
-export const BEADS_GUIDANCE = `<beads-guidance>
-${BEADS_CLI_USAGE}
+const BEADS_DESCRIPTION_STANDARDS = `## Description Standards (RFC 2119)
 
-## Agent Delegation
+Every bead creation MUST include a comprehensive description following RFC 2119:
 
-**Default to the agent.** For ANY beads work involving multiple commands or context gathering, use the \`task\` tool with \`subagent_type: "beads-task-agent"\`:
+**Required Sections:**
+1. **Context** - background and rationale (explains WHY)
+2. **Requirements** - using RFC 2119 keywords (MUST, MUST NOT, SHOULD, MAY, etc.)
+3. **Guardrails** - constraints, boundaries, security considerations
+4. **Dos and Don'ts** - implementation guidance, anti-patterns to avoid
+5. **Acceptance Criteria** - verifiable completion conditions
+6. **Validation** - self-review checklist
+
+**RFC 2119 Keywords:**
+- **MUST/REQUIRED/SHALL**: Absolute requirements
+- **MUST NOT/SHALL NOT**: Absolute prohibitions
+- **SHOULD/RECOMMENDED**: Strong suggestions (can deviate with justification)
+- **SHOULD NOT**: Discouraged but possible
+- **MAY/OPTIONAL**: Truly optional elements
+
+**Shell Safety:**
+- Escape special characters properly
+- Use single quotes for literal strings
+- Test with \`echo '<description>'\` before submission
+
+**Non-compliant issues are INVALID and MUST be rejected. The agent MUST NOT proceed with issue creation until the description meets all RFC 2119 requirements.**`;
+
+const BEADS_AGENT_DELEGATION = `## Agent Delegation
+
+**Default to the agent.** For ANY beads work involving multiple commands or context gathering, use the \`task\` tool with the appropriate subagent:
+
+### Available Agents
+
+- \`beads:task-agent\` - Complex multi-issue workflows, autonomous task completion
+- \`beads:query-agent\` - Read-only exploration, searching, reporting
+- \`beads:cleanup-agent\` - Database maintenance, stale issue detection, compaction
+- \`beads:description-validator\` - Validate descriptions against RFC 2119
+
+### When to Use Each
+
+**\`beads:task-agent\` (default for multi-step work):**
 - Status overviews ("what's next", "what's blocked", "show me progress")
 - Exploring the issue graph (ready + in-progress + blocked queries)
 - Finding and completing ready work
 - Working through multiple issues in sequence
 - Any request that would require 2+ bd commands
+
+**\`beads:query-agent\` (read-only):**
+- Searching and filtering issues
+- Generating reports
+- Answering questions about the issue database
+- Never modifies issues
+
+**\`beads:cleanup-agent\` (maintenance):**
+- Finding stale issues
+- Detecting duplicates
+- Running compaction
+- Database health checks
+
+**\`beads:description-validator\` (quality control):**
+- Validate description before creation
+- Check RFC 2119 compliance
+- Reject non-compliant descriptions
 
 **Use CLI directly ONLY for single, atomic operations:**
 - Creating exactly one issue: \`bd create "title" ...\`
@@ -149,25 +205,49 @@ ${BEADS_CLI_USAGE}
 - When user explicitly requests a specific command
 
 **Why delegate?** The agent processes multiple commands internally and returns only a concise summary. Running bd commands directly dumps hundreds of lines of raw JSON into context, wasting tokens and making the conversation harder to follow.
+
+## Auto-Flush Behavior
+
+After mutating commands (create, update, close, etc.), the plugin automatically runs \`bd sync --flush-only\` to ensure the JSONL file is immediately updated. No manual sync needed after mutations.`;
+
+export const BEADS_GUIDANCE = `<beads-guidance>
+${BEADS_CLI_USAGE}
+
+${BEADS_DESCRIPTION_STANDARDS}
+
+${BEADS_AGENT_DELEGATION}
 </beads-guidance>`;
 
-export async function loadAgent(): Promise<Config["agent"]> {
-  const content = await readVendorFile("agents/task-agent.md");
+async function loadSingleAgent(
+  agentName: string,
+  defaultDescription: string
+): Promise<Config["agent"]> {
+  const content = await readVendorFile(`agents/${agentName}.md`);
   if (!content) return {};
 
   const parsed = parseMarkdownWithFrontmatter(content);
   if (!parsed) return {};
 
-  const description =
-    parsed.frontmatter.description ?? "Beads task completion agent";
+  const description = parsed.frontmatter.description ?? defaultDescription;
 
   return {
-    "beads-task-agent": {
+    [`beads:${agentName}`]: {
       description,
       prompt: BEADS_CLI_USAGE + "\n\n" + BEADS_SUBAGENT_CONTEXT + "\n\n" + parsed.body,
       mode: "subagent",
     },
   };
+}
+
+export async function loadAgent(): Promise<Config["agent"]> {
+  const agents = await Promise.all([
+    loadSingleAgent("task-agent", "Beads task completion agent"),
+    loadSingleAgent("query-agent", "Read-only beads query agent"),
+    loadSingleAgent("cleanup-agent", "Beads database cleanup agent"),
+    loadSingleAgent("description-validator", "Validate bead descriptions against RFC 2119"),
+  ]);
+
+  return Object.assign({}, ...agents);
 }
 
 export async function loadCommands(): Promise<Config["command"]> {
