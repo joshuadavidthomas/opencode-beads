@@ -42,6 +42,7 @@ Manage dependencies between beads issues.
 The `--format mermaid` option outputs the dependency tree as a Mermaid.js flowchart:
 
 **Example:**
+
 ```bash
 bd dep tree bd-1 --format mermaid
 ```
@@ -83,17 +84,20 @@ The diagram colors are determined by your Mermaid theme (default, dark, forest, 
 The `--reverse` flag inverts the tree direction to show **dependents** instead of **dependencies**:
 
 **Normal mode** (`bd dep tree ISSUE`):
+
 - Shows what blocks you (dependency tree)
 - Answers: "What must I complete before I can work on this?"
 - Tree flows **UP** toward prerequisites
 
 **Reverse mode** (`bd dep tree ISSUE --reverse`):
+
 - Shows what was discovered from you (dependent tree)
 - Answers: "What work was discovered while working on this?"
 - Tree flows **DOWN** from goal to discovered tasks
 - Perfect for visualizing work breakdown and discovery chains
 
 **Use Cases:**
+
 - Document project evolution and how work expanded from initial goal
 - Share "how we got here" context with stakeholders
 - Visualize work breakdown structure from epics

@@ -1,11 +1,13 @@
 # Agent Guidelines
 
 ## Commands
+
 - **Typecheck**: `bun run typecheck`
 - **Install deps**: `bun install`
 - No tests configured
 
 ## Code Style
+
 - TypeScript strict mode with ESM modules
 - Use `import type` for type-only imports (verbatimModuleSyntax)
 - Node.js imports use `node:` prefix (e.g., `node:fs/promises`)
@@ -15,11 +17,13 @@
 - Async/await for async operations
 
 ## Project Structure
+
 - `src/plugin.ts` - Main plugin entry point
 - `src/vendor.ts` - Vendor file loaders
 - `vendor/` - Synced content from upstream beads repo (commands, agents)
 
 ## Notes
+
 - This is an OpenCode plugin integrating the beads issue tracker
 - Vendor files are synced via `scripts/sync-beads.sh` - don't edit directly
 
@@ -55,6 +59,7 @@ If the user specifies a version number (e.g., "bump to 0.4.0") or bump type (maj
 ### Commit Convention
 
 Use this exact format:
+
 ```
 :bookmark: bump version X.Y.Z -> A.B.C
 ```
@@ -81,11 +86,13 @@ Use this exact format:
 ### Quick Start
 
 **Check for ready work:**
+
 ```bash
 bd ready --json
 ```
 
 **Create new issues:**
+
 ```bash
 bd create "Issue title" -t bug|feature|task -p 0-4 --json
 bd create "Issue title" -p 1 --deps discovered-from:bd-123 --json
@@ -93,12 +100,14 @@ bd create "Subtask" --parent <epic-id> --json  # Hierarchical subtask (gets ID l
 ```
 
 **Claim and update:**
+
 ```bash
 bd update bd-42 --status in_progress --json
 bd update bd-42 --priority 1 --json
 ```
 
 **Complete work:**
+
 ```bash
 bd close bd-42 --reason "Completed" --json
 ```
@@ -134,22 +143,26 @@ bd close bd-42 --reason "Completed" --json
 Issues must be fully self-contained - readable without any external context (plans, chat history, etc.). A future session should understand the issue completely from its description alone.
 
 **Required elements:**
+
 - **Summary**: What and why in 1-2 sentences
 - **Files to modify**: Exact paths (with line numbers if relevant)
 - **Implementation steps**: Numbered, specific actions
 - **Example**: Show before → after transformation when applicable
 
 **Optional but helpful:**
+
 - Edge cases or gotchas to watch for
 - Test references (point to test files or test_data examples)
 - Dependencies on other issues
 
 **Bad example:**
+
 ```
 Implement the refactoring from the plan
 ```
 
 **Good example:**
+
 ```
 Add timeout parameter to fetchUser() in src/api/users.ts
 
@@ -166,15 +179,18 @@ Depends on: bd-abc123 (fetch wrapper refactor)
 `bd dep add X Y` = "X needs Y" = Y blocks X
 
 **TRAP**: Temporal words ("Phase 1", "before", "first") invert your thinking!
+
 ```
 WRONG: "Phase 1 before Phase 2" → bd dep add phase1 phase2
 RIGHT: "Phase 2 needs Phase 1" → bd dep add phase2 phase1
 ```
+
 **Verify**: `bd blocked` - tasks blocked by prerequisites, not dependents.
 
 ### Auto-Sync
 
 bd automatically syncs with git:
+
 - Exports to `.beads/issues.jsonl` after changes (5s debounce)
 - Imports from JSONL when newer (e.g., after `git pull`)
 - No manual export/import needed!
@@ -193,6 +209,7 @@ pip install beads-mcp
 ```
 
 Add to MCP config (e.g., `~/.config/claude/config.json`):
+
 ```json
 {
   "beads": {
@@ -207,6 +224,7 @@ Then use `mcp__beads__*` functions instead of CLI commands.
 ### Managing AI-Generated Planning Documents
 
 AI assistants often create planning and design documents during development:
+
 - PLAN.md, IMPLEMENTATION.md, ARCHITECTURE.md
 - DESIGN.md, CODEBASE_SUMMARY.md, INTEGRATION_PLAN.md
 - TESTING_GUIDE.md, TECHNICAL_DESIGN.md, and similar files
@@ -214,18 +232,21 @@ AI assistants often create planning and design documents during development:
 **Best Practice: Use a dedicated directory for these ephemeral files**
 
 **Recommended approach:**
+
 - Create a `history/` directory in the project root
 - Store ALL AI-generated planning/design docs in `history/`
 - Keep the repository root clean and focused on permanent project files
 - Only access `history/` when explicitly asked to review past planning
 
 **Example .gitignore entry (optional):**
+
 ```
 # AI planning documents (ephemeral)
 history/
 ```
 
 **Benefits:**
+
 - ✅ Clean repository root
 - ✅ Clear separation between ephemeral and permanent documentation
 - ✅ Easy to exclude from version control if desired

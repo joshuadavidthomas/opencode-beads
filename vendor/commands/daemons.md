@@ -28,11 +28,13 @@ bd daemons list [--search DIRS] [--json] [--no-cleanup]
 ```
 
 **Flags:**
+
 - `--search` - Directories to search for daemons (default: home, /tmp, cwd)
 - `--json` - Output in JSON format
 - `--no-cleanup` - Skip auto-cleanup of stale sockets
 
 **Example:**
+
 ```bash
 bd daemons list
 bd daemons list --search /Users/me/projects --json
@@ -47,15 +49,18 @@ bd daemons health [--search DIRS] [--json]
 ```
 
 Reports:
+
 - Stale sockets (dead processes)
 - Version mismatches between daemon and CLI
 - Unresponsive daemons
 
 **Flags:**
+
 - `--search` - Directories to search for daemons
 - `--json` - Output in JSON format
 
 **Example:**
+
 ```bash
 bd daemons health
 bd daemons health --json
@@ -70,12 +75,15 @@ bd daemons stop <workspace-path|pid> [--json]
 ```
 
 **Arguments:**
+
 - `<workspace-path|pid>` - Workspace path or PID of daemon to stop
 
 **Flags:**
+
 - `--json` - Output in JSON format
 
 **Example:**
+
 ```bash
 bd daemons stop /Users/me/projects/myapp
 bd daemons stop 12345
@@ -93,13 +101,16 @@ bd daemons restart <workspace-path|pid> [--search DIRS] [--json]
 Stops the daemon gracefully, then starts a new one in its place. Useful after upgrading bd or when a daemon needs to be refreshed.
 
 **Arguments:**
+
 - `<workspace-path|pid>` - Workspace path or PID of daemon to restart
 
 **Flags:**
+
 - `--search` - Directories to search for daemons
 - `--json` - Output in JSON format
 
 **Example:**
+
 ```bash
 bd daemons restart /Users/me/projects/myapp
 bd daemons restart 12345
@@ -115,14 +126,17 @@ bd daemons logs <workspace-path|pid> [-f] [-n LINES] [--json]
 ```
 
 **Arguments:**
+
 - `<workspace-path|pid>` - Workspace path or PID of daemon
 
 **Flags:**
+
 - `-f, --follow` - Follow log output (like tail -f)
 - `-n, --lines INT` - Number of lines to show from end (default: 50)
 - `--json` - Output in JSON format
 
 **Example:**
+
 ```bash
 bd daemons logs /Users/me/projects/myapp
 bd daemons logs 12345 -n 100
@@ -139,16 +153,19 @@ bd daemons killall [--search DIRS] [--force] [--json]
 ```
 
 Uses escalating shutdown strategy:
+
 1. RPC shutdown (2 second timeout)
 2. SIGTERM (3 second timeout)
 3. SIGKILL (1 second timeout)
 
 **Flags:**
+
 - `--search` - Directories to search for daemons
 - `--force` - Use SIGKILL immediately if graceful shutdown fails
 - `--json` - Output in JSON format
 
 **Example:**
+
 ```bash
 bd daemons killall
 bd daemons killall --force

@@ -45,7 +45,7 @@ import { createMockPluginInput, createMockChatOutput } from "./mocks/plugin-inpu
 // Create a complete mock PluginInput
 const input = createMockPluginInput({
   directory: "/my/project",
-  worktree: "/my/project"
+  worktree: "/my/project",
 });
 
 // Access the mock client
@@ -71,10 +71,7 @@ describe("my feature", () => {
     const plugin = await BeadsPlugin(input);
 
     // Test chat.message hook
-    await plugin["chat.message"]!(
-      { sessionID: "test" },
-      createMockChatOutput()
-    );
+    await plugin["chat.message"]!({ sessionID: "test" }, createMockChatOutput());
 
     // Assertions...
   });
@@ -94,7 +91,7 @@ describe("my schema", () => {
       title: "Test",
       status: "open",
       type: "task",
-      priority: 2
+      priority: 2,
     });
 
     expect(result.success).toBe(true);
@@ -123,6 +120,7 @@ bun run validate
 ## Continuous Integration
 
 Tests run automatically on:
+
 - Push to `main` branch
 - Pull requests to `main` branch
 - Manual workflow dispatch

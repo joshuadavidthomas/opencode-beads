@@ -19,23 +19,12 @@ type OpencodeClient = PluginInput["client"];
 /**
  * Commands that mutate the issue database and require auto-flush.
  */
-const MUTATING_COMMANDS = [
-  "create",
-  "update",
-  "close",
-  "reopen",
-  "delete",
-  "dep",
-  "label",
-  "epic",
-];
+const MUTATING_COMMANDS = ["create", "update", "close", "reopen", "delete", "dep", "label", "epic"];
 
 /**
  * Regex to detect mutating bd commands in bash tool invocations.
  */
-const MUTATING_COMMAND_REGEX = new RegExp(
-  `bd\\s+(?:${MUTATING_COMMANDS.join("|")})\\b`
-);
+const MUTATING_COMMAND_REGEX = new RegExp(`bd\\s+(?:${MUTATING_COMMANDS.join("|")})\\b`);
 
 /**
  * Check if a bash command is a mutating beads command.
@@ -57,9 +46,7 @@ function isMutatingCommand(command: string): boolean {
 async function getSessionContext(
   client: OpencodeClient,
   sessionID: string
-): Promise<
-  { model?: { providerID: string; modelID: string }; agent?: string } | undefined
-> {
+): Promise<{ model?: { providerID: string; modelID: string }; agent?: string } | undefined> {
   try {
     const response = await client.session.messages({
       path: { id: sessionID },
@@ -98,10 +85,7 @@ async function getSessionContext(
  * @param client - OpenCode client for logging
  * @returns true if beads is available
  */
-async function checkBeadsHealth(
-  $: PluginInput["$"],
-  client: OpencodeClient
-): Promise<boolean> {
+async function checkBeadsHealth($: PluginInput["$"], client: OpencodeClient): Promise<boolean> {
   try {
     const result = await $`bd version`.text();
     await client.app.log({
@@ -199,14 +183,12 @@ ${BEADS_GUIDANCE}`;
         body: {
           service: "beads-plugin",
           level: "warn",
-          message: "Beads CLI not installed. Context injection skipped. Install with: pip install beads-cli",
+          message:
+            "Beads CLI not installed. Context injection skipped. Install with: pip install beads-cli",
           extra: { sessionID, error: errorMessage },
         },
       });
-    } else if (
-      errorMessage.includes("not initialized") ||
-      errorMessage.includes("no .beads")
-    ) {
+    } else if (errorMessage.includes("not initialized") || errorMessage.includes("no .beads")) {
       await client.app.log({
         body: {
           service: "beads-plugin",
@@ -236,10 +218,7 @@ ${BEADS_GUIDANCE}`;
  * @param $ - Plugin shell function
  * @param client - OpenCode client for logging
  */
-async function autoFlushAfterMutation(
-  $: PluginInput["$"],
-  client: OpencodeClient
-): Promise<void> {
+async function autoFlushAfterMutation($: PluginInput["$"], client: OpencodeClient): Promise<void> {
   try {
     await client.app.log({
       body: {
@@ -307,8 +286,7 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
             const parts = (msg as any).parts || (msg.info as any).parts;
             if (!parts) return false;
             return parts.some(
-              (part: any) =>
-                part.type === "text" && part.text?.includes("<beads-context>")
+              (part: any) => part.type === "text" && part.text?.includes("<beads-context>")
             );
           });
 

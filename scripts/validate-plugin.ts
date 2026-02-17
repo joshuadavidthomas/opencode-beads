@@ -26,9 +26,11 @@ interface ValidationResult {
   warnings: string[];
 }
 
-function parseFrontmatter(content: string): { frontmatter: Record<string, string>; body: string } | null {
+function parseFrontmatter(
+  content: string
+): { frontmatter: Record<string, string>; body: string } | null {
   const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
-  const match = content.match(frontmatterRegex);
+  const match = frontmatterRegex.exec(content);
 
   if (!match) return null;
 
@@ -49,7 +51,10 @@ function parseFrontmatter(content: string): { frontmatter: Record<string, string
     let value = trimmed.slice(colonIndex + 1).trim();
 
     // Handle quoted strings
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     }
 
@@ -211,7 +216,7 @@ async function validatePackageJson(): Promise<ValidationResult> {
     if (!pkg.scripts?.typecheck) {
       result.warnings.push("No typecheck script defined in package.json");
     }
-  } catch (error) {
+  } catch {
     result.valid = false;
     result.errors.push("Failed to parse package.json");
   }

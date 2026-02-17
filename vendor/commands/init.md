@@ -10,6 +10,7 @@ If a prefix is provided as $1, use it as the issue prefix (e.g., "myproject" cre
 Use the beads MCP `init` tool with the prefix parameter (if provided) to set up a new beads database.
 
 After initialization:
+
 1. Show the database location
 2. Show the issue prefix that will be used
 3. Explain the basic workflow (or suggest running `/beads:workflow`)

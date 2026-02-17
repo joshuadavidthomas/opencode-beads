@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { loadCommands, loadAgent, BEADS_GUIDANCE, parseMarkdownWithFrontmatter } from "../src/vendor";
+import {
+  loadCommands,
+  loadAgent,
+  BEADS_GUIDANCE,
+  parseMarkdownWithFrontmatter,
+} from "../src/vendor";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";

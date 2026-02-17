@@ -20,6 +20,7 @@ When an issue is compacted, the git commit hash is saved. This command:
 This is **read-only** - it does not modify the database or git state.
 
 Useful for:
+
 - Reviewing old issues after compaction
 - Recovering forgotten context
 - Audit trails

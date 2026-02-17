@@ -10,6 +10,7 @@ Comments are separate from issue properties (title, description, etc.) because t
 ## View Comments
 
 To view all comments on an issue:
+
 - $1: Issue ID (e.g., bd-123)
 
 Use the beads CLI `bd comments <issue-id>` to list all comments. Show them to the user with timestamps and authors.
@@ -17,6 +18,7 @@ Use the beads CLI `bd comments <issue-id>` to list all comments. Show them to th
 ## Add Comment
 
 To add a comment:
+
 - $1: "add"
 - $2: Issue ID
 - $3: Comment text (or use -f flag for file input)
@@ -24,6 +26,7 @@ To add a comment:
 Use `bd comments add <issue-id> "comment text"` to add a comment. Confirm the comment was added successfully.
 
 Comments are useful for:
+
 - Progress updates during work
 - Design notes or technical decisions
 - Links to related resources

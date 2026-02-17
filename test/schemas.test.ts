@@ -112,9 +112,7 @@ describe("schemas", () => {
   describe("ReadySchema", () => {
     it("should validate ready command output", () => {
       const ready = {
-        ready: [
-          { id: "beads-1", title: "Ready issue", status: "open", type: "task", priority: 2 },
-        ],
+        ready: [{ id: "beads-1", title: "Ready issue", status: "open", type: "task", priority: 2 }],
         count: 1,
       };
 
@@ -154,9 +152,7 @@ describe("schemas", () => {
   describe("StaleSchema", () => {
     it("should validate stale command output", () => {
       const stale = {
-        stale: [
-          { id: "beads-1", title: "Stale issue", status: "open", type: "task", priority: 3 },
-        ],
+        stale: [{ id: "beads-1", title: "Stale issue", status: "open", type: "task", priority: 3 }],
         days: 30,
         count: 1,
       };
@@ -183,7 +179,13 @@ describe("schemas", () => {
 
   describe("validateOutput", () => {
     it("should validate valid JSON", () => {
-      const json = JSON.stringify({ id: "beads-1", title: "Test", status: "open", type: "task", priority: 2 });
+      const json = JSON.stringify({
+        id: "beads-1",
+        title: "Test",
+        status: "open",
+        type: "task",
+        priority: 2,
+      });
       const result = validateOutput("create", json, IssueSchema);
 
       expect(result.success).toBe(true);

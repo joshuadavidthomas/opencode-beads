@@ -16,6 +16,7 @@ Sets status to 'open' and clears the closed_at timestamp. Emits a Reopened event
 More explicit than `bd update --status open` - specifically designed for reopening workflow.
 
 Common reasons for reopening:
+
 - Regression found
 - Requirements changed
 - Incomplete implementation

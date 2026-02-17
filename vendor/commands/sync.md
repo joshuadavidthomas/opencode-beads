@@ -44,6 +44,7 @@ When working with a protected main branch and separate sync branch:
 5. Run `bd sync` to push changes to remote
 
 The merge command includes safety checks:
+
 - Verifies you're not on the sync branch
 - Checks for uncommitted changes in working tree
 - Detects and reports merge conflicts with resolution steps

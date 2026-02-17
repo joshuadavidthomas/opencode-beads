@@ -12,6 +12,7 @@ Each project runs its own daemon at `.beads/bd.sock` for complete database isola
 > On Windows this file stores the daemon's loopback TCP endpoint metadata—leave it in place so bd can reconnect.
 
 **Why per-project daemons?**
+
 - Complete database isolation between projects
 - No cross-project pollution or git worktree conflicts
 - Simpler mental model: one project = one database = one daemon
@@ -22,12 +23,14 @@ Each project runs its own daemon at `.beads/bd.sock` for complete database isola
 ## When to Use Daemon Mode
 
 **✅ You SHOULD use daemon mode if:**
+
 - Working in a team with git remote sync
 - Want automatic commit/push of issue changes
 - Need background auto-sync (5-second debounce)
 - Making frequent bd commands (performance benefit from connection pooling)
 
 **❌ You DON'T need daemon mode if:**
+
 - Solo developer with local-only tracking
 - Working in git worktrees (use --no-daemon to avoid conflicts)
 - Running one-off commands or scripts
@@ -52,6 +55,7 @@ Each project runs its own daemon at `.beads/bd.sock` for complete database isola
 - **--interval**: Sync check interval (default: 5m)
 
 The daemon provides:
+
 - Connection pooling and caching
 - Better performance for frequent operations
 - Automatic JSONL sync (5-second debounce)

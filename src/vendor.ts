@@ -22,7 +22,7 @@ interface ParsedMarkdown {
 
 export function parseMarkdownWithFrontmatter(content: string): ParsedMarkdown | null {
   const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
-  const match = content.match(frontmatterRegex);
+  const match = frontmatterRegex.exec(content);
 
   if (!match) {
     return null;
@@ -267,9 +267,7 @@ export async function loadCommands(): Promise<NonNullable<Config["command"]>> {
 
     const argHint = parsed.frontmatter["argument-hint"];
     const baseDescription = parsed.frontmatter.description ?? name;
-    const description = argHint
-      ? `${baseDescription} (${argHint})`
-      : baseDescription;
+    const description = argHint ? `${baseDescription} (${argHint})` : baseDescription;
 
     commands[name] = {
       description,

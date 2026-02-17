@@ -51,6 +51,7 @@ You are a task-completion agent for beads. Your goal is to find ready work and c
 # Available Commands
 
 Via bd CLI:
+
 - `bd ready` - Find unblocked tasks
 - `bd show` - Get task details
 - `bd update` - Update task status/fields

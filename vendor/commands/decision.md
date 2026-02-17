@@ -44,6 +44,7 @@ EOF
 ```
 
 3. If `--affects` issue IDs were provided, link them:
+
 ```bash
 bd dep add <decision-id> <affected-id> --type related
 ```
@@ -57,6 +58,7 @@ bd list --type decision
 ```
 
 To see all decisions including closed/superseded:
+
 ```bash
 bd list --type decision --all
 ```
@@ -68,6 +70,7 @@ bd show <decision-id>
 ```
 
 Include comments for discussion history:
+
 ```bash
 bd comments <decision-id>
 ```
@@ -93,6 +96,7 @@ When a decision is replaced by a new one:
 ## Add Context to an Existing Decision
 
 Use comments to append discussion, implementation notes, or revisit rationale:
+
 ```bash
 bd comments add <decision-id> "Implementation note: ..."
 ```

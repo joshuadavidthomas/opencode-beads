@@ -2,7 +2,7 @@ name: sync-beads
 
 on:
   schedule:
-    - cron: '0 9 * * *'
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 jobs:

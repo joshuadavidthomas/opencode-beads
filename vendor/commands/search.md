@@ -19,6 +19,7 @@ bd search "bd-5q"  # Search by partial issue ID
 ## How It Works
 
 The search command finds issues where your query appears in **any** of:
+
 - Issue title
 - Issue description
 - Issue ID (supports partial matching)
@@ -41,6 +42,7 @@ Unlike `bd list`, which requires you to specify which field to search, `bd searc
 ## Examples
 
 ### Basic Search
+
 ```bash
 # Find all issues mentioning "auth" or "authentication"
 bd search auth
@@ -53,6 +55,7 @@ bd search database --type bug
 ```
 
 ### Filtered Search
+
 ```bash
 # Find open backend issues about login
 bd search login --status open --label backend
@@ -65,6 +68,7 @@ bd search bug --status open --limit 10
 ```
 
 ### Sorted Output
+
 ```bash
 # Search bugs sorted by priority (P0 first)
 bd search bug --sort priority
@@ -77,6 +81,7 @@ bd search refactor --sort priority --reverse
 ```
 
 ### JSON Output
+
 ```bash
 # Get JSON results for programmatic use
 bd search "api error" --json
@@ -87,17 +92,19 @@ bd search memory --json | jq '.[] | select(.priority <= 1)'
 
 ## Comparison with bd list
 
-| Command | Best For | Default Limit | Context Usage |
-|---------|----------|---------------|---------------|
-| `bd search` | Quick text searches, exploratory queries | 50 | Low (efficient for LLMs) |
-| `bd list` | Advanced filtering, precise queries | None | High (all results) |
+| Command     | Best For                                 | Default Limit | Context Usage            |
+| ----------- | ---------------------------------------- | ------------- | ------------------------ |
+| `bd search` | Quick text searches, exploratory queries | 50            | Low (efficient for LLMs) |
+| `bd list`   | Advanced filtering, precise queries      | None          | High (all results)       |
 
 **When to use `bd search`:**
+
 - You want to find issues quickly by keyword
 - You're exploring the issue database
 - You're using an LLM/MCP and want to minimize context usage
 
 **When to use `bd list`:**
+
 - You need advanced filters (date ranges, priority ranges, etc.)
 - You want all results without a limit
 - You need special output formats (digraph, dot)

@@ -5,6 +5,7 @@ description: Find ready-to-work tasks with no blockers
 Use `bd ready --json` to find tasks that are ready to work on (no blocking dependencies).
 
 Parse the JSON output and present them to the user in a clear format showing:
+
 - Issue ID
 - Title
 - Priority

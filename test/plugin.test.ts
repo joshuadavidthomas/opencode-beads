@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Config } from "@opencode-ai/sdk";
 import { BeadsPlugin } from "../src/plugin";
-import { createMockPluginInput, createMockChatOutput, createMockUserMessage } from "./mocks/plugin-input";
+import {
+  createMockPluginInput,
+  createMockChatOutput,
+  createMockUserMessage,
+} from "./mocks/plugin-input";
 
 describe("BeadsPlugin", () => {
   beforeEach(() => {
@@ -20,8 +24,8 @@ describe("BeadsPlugin", () => {
       expect(plugin).toBeDefined();
       expect(plugin["chat.message"]).toBeDefined();
       expect(plugin["tool.execute.after"]).toBeDefined();
-      expect(plugin["event"]).toBeDefined();
-      expect(plugin["config"]).toBeDefined();
+      expect(plugin.event).toBeDefined();
+      expect(plugin.config).toBeDefined();
     });
   });
 
@@ -62,7 +66,7 @@ describe("BeadsPlugin", () => {
       // Simulate a bash command that creates an issue
       await plugin["tool.execute.after"]!(
         { tool: "bash", sessionID: "test", callID: "call-1" },
-        { title: "Bash", output: "bd create \"Test issue\" -t task", metadata: {} }
+        { title: "Bash", output: 'bd create "Test issue" -t task', metadata: {} }
       );
 
       // The plugin should have detected the mutating command
@@ -104,7 +108,7 @@ describe("BeadsPlugin", () => {
         properties: { sessionID: "test-session" },
       };
 
-      await plugin["event"]!({ event });
+      await plugin.event!({ event });
 
       // Should re-inject context after compaction
     });
@@ -116,7 +120,7 @@ describe("BeadsPlugin", () => {
       const plugin = await BeadsPlugin(input);
 
       const config = { command: {}, agent: {} };
-      await plugin["config"]!(config);
+      await plugin.config!(config);
 
       // Should have registered beads commands
       expect(Object.keys(config.command).length).toBeGreaterThan(0);
@@ -129,7 +133,7 @@ describe("BeadsPlugin", () => {
       const plugin = await BeadsPlugin(input);
 
       const config: Config = { command: {}, agent: {} };
-      await plugin["config"]!(config);
+      await plugin.config!(config);
 
       expect(config.command?.["beads:create"]).toBeDefined();
       expect(config.command?.["beads:ready"]).toBeDefined();
@@ -141,7 +145,7 @@ describe("BeadsPlugin", () => {
       const plugin = await BeadsPlugin(input);
 
       const config: Config = { command: {}, agent: {} };
-      await plugin["config"]!(config);
+      await plugin.config!(config);
 
       expect(config.agent?.["beads:task-agent"]).toBeDefined();
       expect(config.agent?.["beads:query-agent"]).toBeDefined();
@@ -199,7 +203,9 @@ describe("BeadsPlugin", () => {
       const output = createMockChatOutput({ sessionID: "test-session" });
 
       // Should not throw even if session.messages fails
-      await expect(plugin["chat.message"]!({ sessionID: "test-session" }, output)).resolves.not.toThrow();
+      await expect(
+        plugin["chat.message"]!({ sessionID: "test-session" }, output)
+      ).resolves.not.toThrow();
 
       // Restore
       client.session.messages = originalMessages;
@@ -233,14 +239,14 @@ describe("BeadsPlugin", () => {
 
   describe("mutating command detection", () => {
     const mutatingCommands = [
-      "bd create \"Test\" -t task",
+      'bd create "Test" -t task',
       "bd update beads-1 --status closed",
       "bd close beads-1",
       "bd reopen beads-1",
       "bd delete beads-1",
       "bd dep add beads-1 beads-2",
       "bd label add beads-1 bug",
-      "bd epic create \"Test Epic\"",
+      'bd epic create "Test Epic"',
     ];
 
     const nonMutatingCommands = [

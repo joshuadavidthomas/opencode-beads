@@ -48,6 +48,7 @@ This plugin provides specialized subagents for different beads workflows:
 ### beads:task-agent
 
 The default agent for complex multi-issue workflows. Use for:
+
 - Status overviews ("what's next", "what's blocked")
 - Exploring the issue graph
 - Finding and completing ready work
@@ -57,6 +58,7 @@ The default agent for complex multi-issue workflows. Use for:
 ### beads:query-agent
 
 Read-only agent for exploration and reporting. Use for:
+
 - Searching and filtering issues
 - Generating reports
 - Answering questions about the issue database
@@ -65,6 +67,7 @@ Read-only agent for exploration and reporting. Use for:
 ### beads:cleanup-agent
 
 Maintenance agent for database health. Use for:
+
 - Finding stale issues
 - Detecting duplicates
 - Running compaction
@@ -73,6 +76,7 @@ Maintenance agent for database health. Use for:
 ### beads:description-validator
 
 Quality control agent for RFC 2119 compliance. Use for:
+
 - Validating descriptions before creation
 - Checking RFC 2119 keyword usage (MUST, SHOULD, MAY, etc.)
 - Rejecting non-compliant descriptions
@@ -89,20 +93,20 @@ Commands are available as `beads:*` (e.g., `beads:ready`, `beads:create`, `beads
 
 ### Common Commands
 
-| Command | Description |
-|---------|-------------|
-| `beads:ready` | Find ready-to-work tasks with no blockers |
-| `beads:create` | Create a new issue with RFC 2119-compliant description |
-| `beads:update` | Update issue status, priority, or other fields |
-| `beads:close` | Close a completed issue |
-| `beads:show` | Show detailed information about an issue |
-| `beads:list` | List issues with optional filters |
-| `beads:blocked` | Show blocked issues and their dependencies |
-| `beads:status` | Show project overview and statistics |
-| `beads:doctor` | Check beads installation health |
-| `beads:query` | Query issues using filter language |
-| `beads:stale` | Find issues not updated recently |
-| `beads:sync` | Synchronize issues with git remote |
+| Command         | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| `beads:ready`   | Find ready-to-work tasks with no blockers              |
+| `beads:create`  | Create a new issue with RFC 2119-compliant description |
+| `beads:update`  | Update issue status, priority, or other fields         |
+| `beads:close`   | Close a completed issue                                |
+| `beads:show`    | Show detailed information about an issue               |
+| `beads:list`    | List issues with optional filters                      |
+| `beads:blocked` | Show blocked issues and their dependencies             |
+| `beads:status`  | Show project overview and statistics                   |
+| `beads:doctor`  | Check beads installation health                        |
+| `beads:query`   | Query issues using filter language                     |
+| `beads:stale`   | Find issues not updated recently                       |
+| `beads:sync`    | Synchronize issues with git remote                     |
 
 See the [beads documentation](https://github.com/steveyegge/beads) for the full command reference.
 

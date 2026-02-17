@@ -12,7 +12,7 @@ import type { OpencodeClient } from "@opencode-ai/sdk";
  * Create a mock OpenCode client
  */
 export function createMockClient(): OpencodeClient {
-  const logEntries: Array<{ level: string; message: string; extra?: Record<string, unknown> }> = [];
+  const logEntries: { level: string; message: string; extra?: Record<string, unknown> }[] = [];
 
   const mockClient = {
     global: {
@@ -59,7 +59,7 @@ export function createMockClient(): OpencodeClient {
  * Create a mock BunShell function
  */
 export function createMockShell(): PluginInput["$"] {
-  const executedCommands: Array<{ command: string; options?: Record<string, unknown> }> = [];
+  const executedCommands: { command: string; options?: Record<string, unknown> }[] = [];
 
   const mockShell = Object.assign(
     async (strings: TemplateStringsArray, ...values: unknown[]) => {
@@ -88,10 +88,12 @@ export function createMockShell(): PluginInput["$"] {
 /**
  * Create a complete mock PluginInput
  */
-export function createMockPluginInput(options: {
-  directory?: string;
-  worktree?: string;
-} = {}): PluginInput {
+export function createMockPluginInput(
+  options: {
+    directory?: string;
+    worktree?: string;
+  } = {}
+): PluginInput {
   const client = createMockClient();
   const $ = createMockShell();
 
@@ -111,11 +113,13 @@ export function createMockPluginInput(options: {
 /**
  * Helper to create a mock user message
  */
-export function createMockUserMessage(overrides: {
-  sessionID?: string;
-  agent?: string;
-  model?: { providerID: string; modelID: string };
-} = {}) {
+export function createMockUserMessage(
+  overrides: {
+    sessionID?: string;
+    agent?: string;
+    model?: { providerID: string; modelID: string };
+  } = {}
+) {
   return {
     id: "msg-1",
     sessionID: overrides.sessionID ?? "session-1",
@@ -123,18 +127,28 @@ export function createMockUserMessage(overrides: {
     time: { created: Date.now() },
     agent: overrides.agent ?? "test-agent",
     model: overrides.model ?? { providerID: "test", modelID: "test-model" },
-    parts: [{ type: "text" as const, text: "test message", id: "part-1", sessionID: "session-1", messageID: "msg-1" }],
+    parts: [
+      {
+        type: "text" as const,
+        text: "test message",
+        id: "part-1",
+        sessionID: "session-1",
+        messageID: "msg-1",
+      },
+    ],
   };
 }
 
 /**
  * Helper to create mock chat.message output
  */
-export function createMockChatOutput(overrides: {
-  sessionID?: string;
-  agent?: string;
-  model?: { providerID: string; modelID: string };
-} = {}) {
+export function createMockChatOutput(
+  overrides: {
+    sessionID?: string;
+    agent?: string;
+    model?: { providerID: string; modelID: string };
+  } = {}
+) {
   const message = createMockUserMessage(overrides);
   return {
     message,
