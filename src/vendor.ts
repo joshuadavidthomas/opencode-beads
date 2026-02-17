@@ -110,13 +110,25 @@ If a tool is not listed above, try \`bd <tool> --help\`.
 
 Always use \`--json\` flag for structured output.`;
 
-const BEADS_SUBAGENT_CONTEXT = `## Subagent Context
+const BEADS_SUBAGENT_CONTEXT = `## SCOPE - READ FIRST
+
+**You are a beads issue management agent ONLY.**
+
+**You MUST NOT:**
+- Write, modify, or delete any code files
+- Execute build, test, or lint commands
+- Modify configuration files
+- Perform ANY software development work
+
+**You MUST:**
+- ONLY run bd CLI commands for issue management
+- Return results to the parent agent for any non-beads work
+
+---
+
+## Subagent Context
 
 You are called as a subagent for **beads issue management ONLY**. Your **final message** is what gets returned to the calling agent - make it count.
-
-**Your purpose:** Manage beads issues and the issue database. This is for issue tracking ONLY.
-
-**DO NOT write or modify code files.** This agent is for beads issue management, not code implementation.
 
 **For status/overview requests** ("what's next", "show me blocked work"):
 - Run the necessary \`bd\` commands to gather data
@@ -127,7 +139,8 @@ You are called as a subagent for **beads issue management ONLY**. Your **final m
 
 **For task completion requests** ("complete ready work", "work on issues"):
 - Find ready work, update beads issue status to in_progress
-- Execute the issue (code changes are done by the parent agent, NOT by this beads agent)
+- Manage the issue lifecycle (status updates, dependencies, closing)
+- Code changes are done by the PARENT agent, NOT by this beads agent
 - Add dependencies when related issues are discovered
 - Close the issue when complete
 - Report progress as you work
@@ -167,19 +180,21 @@ const BEADS_AGENT_DELEGATION = `## Agent Delegation
 
 ### Available Agents
 
-- \`beads:task-agent\` - Complex multi-issue workflows, autonomous task completion
+- \`beads:task-agent\` - **ISSUE MANAGEMENT ONLY**: Creates and updates beads issues, manages dependencies and status
 - \`beads:query-agent\` - Read-only exploration, searching, reporting
 - \`beads:cleanup-agent\` - Database maintenance, stale issue detection, compaction
 - \`beads:description-validator\` - Validate descriptions against RFC 2119
 
 ### When to Use Each
 
-**\`beads:task-agent\` (default for multi-step work):**
-- Status overviews ("what's next", "what's blocked", "show me progress")
-- Exploring the issue graph (ready + in-progress + blocked queries)
-- Finding and completing ready work
-- Working through multiple issues in sequence
-- Any request that would require 2+ bd commands
+**\`beads:task-agent\` (beads issue operations ONLY):**
+- Creating multiple issues in sequence
+- Updating issue statuses (in_progress, blocked, closed)
+- Adding dependencies between issues
+- Status overviews requiring multiple bd commands
+- ANY beads work requiring 2+ bd commands
+
+**CRITICAL**: The task-agent does NOT write code, modify files, or execute builds. It ONLY manages beads issues.
 
 **\`beads:query-agent\` (read-only):**
 - Searching and filtering issues
