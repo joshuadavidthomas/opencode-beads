@@ -221,7 +221,7 @@ ${BEADS_AGENT_DELEGATION}
 async function loadSingleAgent(
   agentName: string,
   defaultDescription: string
-): Promise<Config["agent"]> {
+): Promise<NonNullable<Config["agent"]> | Record<string, never>> {
   const content = await readVendorFile(`agents/${agentName}.md`);
   if (!content) return {};
 
@@ -239,7 +239,7 @@ async function loadSingleAgent(
   };
 }
 
-export async function loadAgent(): Promise<Config["agent"]> {
+export async function loadAgent(): Promise<NonNullable<Config["agent"]>> {
   const agents = await Promise.all([
     loadSingleAgent("task-agent", "Beads task completion agent"),
     loadSingleAgent("query-agent", "Read-only beads query agent"),
@@ -250,9 +250,9 @@ export async function loadAgent(): Promise<Config["agent"]> {
   return Object.assign({}, ...agents);
 }
 
-export async function loadCommands(): Promise<Config["command"]> {
+export async function loadCommands(): Promise<NonNullable<Config["command"]>> {
   const files = await listVendorFiles("commands");
-  const commands: Config["command"] = {};
+  const commands: NonNullable<Config["command"]> = {};
 
   for (const file of files) {
     if (!file.endsWith(".md")) continue;
