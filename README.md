@@ -146,6 +146,42 @@ cd opencode-beads
 bun install
 ```
 
+### Installing Locally in OpenCode
+
+To use your local copy of the plugin instead of the npm version:
+
+1. Build the plugin:
+
+```bash
+bun run build
+```
+
+2. Link the plugin globally (optional but recommended):
+
+```bash
+bun link
+```
+
+3. Add to your OpenCode config (`~/.config/opencode/opencode.json`):
+
+```json
+{
+  "plugin": ["/path/to/your/opencode-beads"]
+}
+```
+
+Or use the absolute path without linking:
+
+```json
+{
+  "plugin": ["/home/username/projects/opencode-beads"]
+}
+```
+
+4. Restart OpenCode to load the local plugin.
+
+**Note:** When using a local path, OpenCode loads the plugin directly from the source directory on every startup (no caching). This is ideal for development as changes are reflected immediately after restarting OpenCode.
+
 ### Running Tests
 
 ```bash
