@@ -36,6 +36,7 @@
     "@types/node": "^22.0.0",
     "eslint": "^9.x",
     "eslint-config-prettier": "^10.x",
+    "eslint-formatter-compact": "^9.0.1",
     "prettier": "^3.x",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.x"

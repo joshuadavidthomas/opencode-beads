@@ -12,6 +12,8 @@ export default ts.config(
       "@typescript-eslint/no-explicit-any": "off",
       // Allow non-null assertions for known-safe cases
       "@typescript-eslint/no-non-null-assertion": "off",
+      // Allow underscore-prefixed unused variables (intentionally unused)
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     },
   },
   prettier
