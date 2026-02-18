@@ -182,7 +182,7 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       config.agent = { ...config.agent, ...agents };
     },
 
-    "tool.execute.after": async (input, _output) => {
+    "tool.execute.after": async (input, output) => {
       // Only check bash tool executions
       if (input.tool !== "bash") return;
 
