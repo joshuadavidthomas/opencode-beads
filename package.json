@@ -26,9 +26,8 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^1.0.143",
-    "@opencode-ai/sdk": "^1.0.143",
-    "zod": "^4.1.13"
+    "@opencode-ai/plugin": "^1.0.148",
+    "@opencode-ai/sdk": "^1.0.148"
   },
   "devDependencies": {
     "@eslint/js": "^9.x",
