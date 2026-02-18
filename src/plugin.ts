@@ -130,7 +130,13 @@ ${BEADS_GUIDANCE}`;
       },
     });
 
-    client.app.log?.("debug", `Injected beads context into session ${sessionID.slice(0, 8)}...`);
+    client.app.log?.({
+      body: {
+        service: "beads",
+        level: "debug",
+        message: `Injected beads context into session ${sessionID.slice(0, 8)}...`,
+      },
+    });
   } catch {
     // Silent skip if bd prime fails (not installed or not initialized)
   }
@@ -141,9 +147,21 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
   // Health check on plugin load
   const isHealthy = await checkBeadsHealth($);
   if (!isHealthy) {
-    client.app.log?.("warn", "Beads CLI not available. Plugin will not inject context.");
+    client.app.log?.({
+      body: {
+        service: "beads",
+        level: "warn",
+        message: "Beads CLI not available. Plugin will not inject context.",
+      },
+    });
   } else {
-    client.app.log?.("info", "Beads plugin initialized successfully.");
+    client.app.log?.({
+      body: {
+        service: "beads",
+        level: "info",
+        message: "Beads plugin initialized successfully.",
+      },
+    });
   }
 
   const [commands, agents] = await Promise.all([loadCommands(), loadAgent()]);
@@ -208,28 +226,46 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       config.agent = { ...config.agent, ...agents };
     },
 
-    "tool.execute.after": async ({ input, output }) => {
+    "tool.execute.after": async (input, _output) => {
       // Only check bash tool executions
       if (input.tool !== "bash") return;
 
-      const command = input.arguments?.command;
+      const command = (input as any).arguments?.command;
       if (typeof command !== "string") return;
 
       // Check if this was a mutating beads command
       if (isMutatingBeadsCommand(command)) {
         // Verify the command succeeded before flushing
-        if (output?.error) {
-          client.app.log?.("debug", `Skipping auto-flush - command failed: ${command}`);
+        if ((_output as any)?.error) {
+          client.app.log?.({
+            body: {
+              service: "beads",
+              level: "debug",
+              message: `Skipping auto-flush - command failed: ${command}`,
+            },
+          });
           return;
         }
 
         try {
           // Auto-flush beads changes to sync with git
           await $`bd sync --flush-only`;
-          client.app.log?.("info", `Auto-flushed beads changes after: ${command}`);
+          client.app.log?.({
+            body: {
+              service: "beads",
+              level: "info",
+              message: `Auto-flushed beads changes after: ${command}`,
+            },
+          });
         } catch {
           // Silent fail - sync is best-effort
-          client.app.log?.("debug", `Auto-flush failed after: ${command}`);
+          client.app.log?.({
+            body: {
+              service: "beads",
+              level: "debug",
+              message: `Auto-flush failed after: ${command}`,
+            },
+          });
         }
       }
     },
