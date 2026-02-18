@@ -182,11 +182,11 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       config.agent = { ...config.agent, ...agents };
     },
 
-    "tool.execute.after": async (input, output) => {
+    "tool.execute.after": async ({ input, output }) => {
       // Only check bash tool executions
       if (input.tool !== "bash") return;
 
-      const command = (input as any).arguments?.command;
+      const command = input.arguments?.command;
       if (typeof command !== "string") return;
 
       // Check if this was a mutating beads command
