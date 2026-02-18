@@ -1,11 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
-    "declaration": false,
-    "declarationMap": false,
-    "sourceMap": false,
-    "outDir": "./test-dist"
+    "types": ["vitest/globals", "node"]
   },
   "include": ["src/**/*", "test/**/*"]
 }

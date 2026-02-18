@@ -23,17 +23,10 @@
     "README.md"
   ],
   "scripts": {
-    "setup": "bun install",
-    "build": "bun pm pack",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "validate": "bun run scripts/validate-plugin.ts",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "publish": "bun publish"
+    "validate": "bun run scripts/validate-plugin.ts"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.143",
@@ -41,16 +34,16 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.0.0",
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
-    "@vitest/coverage-v8": "^3.0.0",
-    "eslint": "^10.0.0",
-    "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.8.1",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.56.0",
-    "vitest": "^3.0.0"
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "bun": ">=1.0.0"

@@ -1,157 +1,87 @@
 /**
- * Mock utilities for PluginInput testing
- *
- * Provides factories for creating mock OpenCode client, shell, and PluginInput
- * objects for testing the beads plugin.
+ * Mock utilities for PluginInput testing.
  */
 
 import type { PluginInput } from "@opencode-ai/plugin";
-import type { OpencodeClient } from "@opencode-ai/sdk";
 
 /**
- * Create a mock OpenCode client
+ * Create a mock OpenCode client.
  */
-export function createMockClient(): OpencodeClient {
-  const logEntries: { level: string; message: string; extra?: Record<string, unknown> }[] = [];
-
-  const mockClient = {
-    global: {
-      event: async () => ({ data: null }),
-    },
-    project: {
-      list: async () => ({ data: [] }),
-      current: async () => ({ data: { id: "test-project", name: "Test Project" } }),
-    },
+export function createMockClient() {
+  return {
     session: {
-      list: async () => ({ data: [] }),
-      messages: async () => ({ data: [] }),
-      prompt: async () => ({ data: null }),
-      status: async () => ({ data: { id: "test-session", status: "active" } }),
+      messages: vi.fn().mockResolvedValue({ data: [] }),
+      prompt: vi.fn().mockResolvedValue(undefined),
     },
     app: {
-      log: async (options: {
-        body: { service: string; level: string; message: string; extra?: Record<string, unknown> };
-      }) => {
-        logEntries.push({
-          level: options.body.level,
-          message: options.body.message,
-          extra: options.body.extra,
-        });
-        return { data: null };
-      },
-      agents: async () => ({ data: [] }),
+      log: vi.fn(),
     },
-    config: {
-      get: async () => ({ data: {} }),
-      update: async () => ({ data: null }),
-    },
-    _logEntries: logEntries,
-    _getLogs: () => logEntries,
-    _clearLogs: () => {
-      logEntries.length = 0;
-    },
-  } as unknown as OpencodeClient;
-
-  return mockClient;
+  };
 }
 
 /**
- * Create a mock BunShell function
+ * Create a mock shell function.
  */
-export function createMockShell(): PluginInput["$"] {
-  const executedCommands: { command: string; options?: Record<string, unknown> }[] = [];
+export function createMockShell() {
+  const mockShell = vi.fn();
 
-  const mockShell = Object.assign(
-    async (strings: TemplateStringsArray, ...values: unknown[]) => {
-      const command = strings.reduce((acc, str, i) => acc + str + (values[i] ?? ""), "");
-      executedCommands.push({ command });
-
-      return {
-        text: async () => "mock-output",
-        json: async () => ({}),
-        quiet: async () => ({ text: async () => "" }),
-        _command: command,
-      };
+  // Support template literal usage
+  const shellProxy = new Proxy(mockShell, {
+    get(target, prop) {
+      if (prop === "quiet") {
+        return () => ({ text: () => Promise.resolve("") });
+      }
+      return target[prop];
     },
-    {
-      _commands: executedCommands,
-      _getCommands: () => executedCommands,
-      _clearCommands: () => {
-        executedCommands.length = 0;
-      },
-    }
-  ) as unknown as PluginInput["$"];
+  }) as unknown as PluginInput["$"];
 
-  return mockShell;
+  return shellProxy;
 }
 
 /**
- * Create a complete mock PluginInput
+ * Create a complete mock PluginInput.
  */
 export function createMockPluginInput(
-  options: {
-    directory?: string;
-    worktree?: string;
-  } = {}
+  overrides: Partial<PluginInput> = {}
 ): PluginInput {
   const client = createMockClient();
   const $ = createMockShell();
 
   return {
-    client,
+    client: client as unknown as PluginInput["client"],
     $,
-    project: {
-      id: "test-project",
-      worktree: options.worktree ?? "/test",
-      time: { created: Date.now() },
-    },
-    directory: options.directory ?? "/test",
-    worktree: options.worktree ?? "/test",
+    ...overrides,
   };
 }
 
 /**
- * Helper to create a mock user message
+ * Setup mock for bd prime output.
  */
-export function createMockUserMessage(
-  overrides: {
-    sessionID?: string;
-    agent?: string;
-    model?: { providerID: string; modelID: string };
-  } = {}
+export function mockBdPrime(
+  client: ReturnType<typeof createMockClient>,
+  output: string
 ) {
+  const shellFn = vi.fn().mockResolvedValue({ text: () => Promise.resolve(output) });
+  return shellFn;
+}
+
+/**
+ * Create mock session messages for context injection testing.
+ */
+export function createMockMessages(messages: Array<{
+  role: string;
+  model?: { providerID: string; modelID: string };
+  agent?: string;
+  parts?: Array<{ type: string; text?: string }>;
+}> = []) {
   return {
-    id: "msg-1",
-    sessionID: overrides.sessionID ?? "session-1",
-    role: "user" as const,
-    time: { created: Date.now() },
-    agent: overrides.agent ?? "test-agent",
-    model: overrides.model ?? { providerID: "test", modelID: "test-model" },
-    parts: [
-      {
-        type: "text" as const,
-        text: "test message",
-        id: "part-1",
-        sessionID: "session-1",
-        messageID: "msg-1",
+    data: messages.map((msg) => ({
+      info: {
+        role: msg.role,
+        ...(msg.model && { model: msg.model }),
+        ...(msg.agent && { agent: msg.agent }),
       },
-    ],
-  };
-}
-
-/**
- * Helper to create mock chat.message output
- */
-export function createMockChatOutput(
-  overrides: {
-    sessionID?: string;
-    agent?: string;
-    model?: { providerID: string; modelID: string };
-  } = {}
-) {
-  const message = createMockUserMessage(overrides);
-  return {
-    message,
-    parts: message.parts,
+      ...(msg.parts && { parts: msg.parts }),
+    })),
   };
 }

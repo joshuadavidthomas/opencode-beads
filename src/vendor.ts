@@ -66,7 +66,7 @@ export function parseMarkdownWithFrontmatter(content: string): ParsedMarkdown | 
   return { frontmatter, body: body.trim() };
 }
 
-async function readVendorFile(relativePath: string): Promise<string | null> {
+export async function readVendorFile(relativePath: string): Promise<string | null> {
   try {
     const fullPath = path.join(getVendorDir(), relativePath);
     return await fs.readFile(fullPath, "utf-8");
@@ -75,7 +75,7 @@ async function readVendorFile(relativePath: string): Promise<string | null> {
   }
 }
 
-async function listVendorFiles(relativePath: string): Promise<string[]> {
+export async function listVendorFiles(relativePath: string): Promise<string[]> {
   try {
     const fullPath = path.join(getVendorDir(), relativePath);
     return await fs.readdir(fullPath);
@@ -259,7 +259,7 @@ export async function loadAgent(): Promise<NonNullable<Config["agent"]>> {
     loadSingleAgent("task-agent", "Beads task completion agent"),
     loadSingleAgent("query-agent", "Read-only beads query agent"),
     loadSingleAgent("cleanup-agent", "Beads database cleanup agent"),
-    loadSingleAgent("description-validator", "Validate bead descriptions against RFC 2119"),
+    loadSingleAgent("description-validator-agent", "Validate bead descriptions against RFC 2119"),
   ]);
 
   return Object.assign({}, ...agents);

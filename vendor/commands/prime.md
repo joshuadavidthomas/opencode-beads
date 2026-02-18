@@ -1,6 +1,5 @@
 ---
 description: Load AI-optimized workflow context for beads issue tracking
-argument-hint:
 ---
 
 Load AI-optimized workflow context for beads issue tracking.

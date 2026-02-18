@@ -17,6 +17,20 @@ import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
 type OpencodeClient = PluginInput["client"];
 
 /**
+ * Helper to log messages via the OpenCode client app.
+ * Wraps messages in the correct Options<AppLogData> format.
+ */
+function log(
+  client: OpencodeClient,
+  level: "debug" | "info" | "error" | "warn",
+  message: string
+): void {
+  client.app.log({
+    body: { service: "beads", level, message },
+  });
+}
+
+/**
  * Commands that mutate the issue database and require auto-flush.
  */
 const MUTATING_COMMANDS = ["create", "update", "close", "reopen", "delete", "dep", "label", "epic"];
@@ -62,17 +76,11 @@ async function getSessionContext(
     }
   } catch (err) {
     // On error, return undefined (let opencode use its default)
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Failed to get session context",
-        extra: {
-          sessionID,
-          error: err instanceof Error ? err.message : String(err),
-        },
-      },
-    });
+    log(
+      client,
+      "info",
+      `Failed to get session context: ${err instanceof Error ? err.message : String(err)}`
+    );
   }
 
   return undefined;
@@ -88,26 +96,14 @@ async function getSessionContext(
 async function checkBeadsHealth($: PluginInput["$"], client: OpencodeClient): Promise<boolean> {
   try {
     const result = await $`bd version`.text();
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Beads CLI is available",
-        extra: { version: result.trim() },
-      },
-    });
+    log(client, "info", `Beads CLI is available: ${result.trim()}`);
     return true;
   } catch (err) {
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "warn",
-        message: "Beads CLI not found or not working. Install with: pip install beads-cli",
-        extra: {
-          error: err instanceof Error ? err.message : String(err),
-        },
-      },
-    });
+    log(
+      client,
+      "warn",
+      `Beads CLI not found or not working. Install with: pip install beads-cli. Error: ${err instanceof Error ? err.message : String(err)}`
+    );
     return false;
   }
 }
@@ -125,26 +121,12 @@ async function injectBeadsContext(
   context?: { model?: { providerID: string; modelID: string }; agent?: string }
 ): Promise<void> {
   try {
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Injecting beads context",
-        extra: { sessionID },
-      },
-    });
+    log(client, "info", `Injecting beads context for session ${sessionID}`);
 
     const primeOutput = await $`bd prime`.text();
 
     if (!primeOutput || primeOutput.trim() === "") {
-      await client.app.log({
-        body: {
-          service: "beads-plugin",
-          level: "debug",
-          message: "Empty beads prime output, skipping injection",
-          extra: { sessionID },
-        },
-      });
+      log(client, "info", `Empty beads prime output, skipping injection for ${sessionID}`);
       return;
     }
 
@@ -166,46 +148,25 @@ ${BEADS_GUIDANCE}`;
       },
     });
 
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Beads context injected successfully",
-        extra: { sessionID },
-      },
-    });
+    log(client, "info", `Beads context injected successfully for ${sessionID}`);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);
 
     // Provide specific guidance based on error type
     if (errorMessage.includes("not found") || errorMessage.includes("ENOENT")) {
-      await client.app.log({
-        body: {
-          service: "beads-plugin",
-          level: "warn",
-          message:
-            "Beads CLI not installed. Context injection skipped. Install with: pip install beads-cli",
-          extra: { sessionID, error: errorMessage },
-        },
-      });
+      log(
+        client,
+        "warn",
+        `Beads CLI not installed for ${sessionID}. Context injection skipped. Install with: pip install beads-cli. Error: ${errorMessage}`
+      );
     } else if (errorMessage.includes("not initialized") || errorMessage.includes("no .beads")) {
-      await client.app.log({
-        body: {
-          service: "beads-plugin",
-          level: "warn",
-          message: "Beads not initialized in this project. Run `bd init` to set up.",
-          extra: { sessionID, error: errorMessage },
-        },
-      });
+      log(
+        client,
+        "warn",
+        `Beads not initialized in this project (${sessionID}). Run \`bd init\` to set up. Error: ${errorMessage}`
+      );
     } else {
-      await client.app.log({
-        body: {
-          service: "beads-plugin",
-          level: "warn",
-          message: "Failed to inject beads context",
-          extra: { sessionID, error: errorMessage },
-        },
-      });
+      log(client, "info", `Failed to inject beads context for ${sessionID}: ${errorMessage}`);
     }
   }
 }
@@ -220,31 +181,16 @@ ${BEADS_GUIDANCE}`;
  */
 async function autoFlushAfterMutation($: PluginInput["$"], client: OpencodeClient): Promise<void> {
   try {
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Auto-flushing beads database after mutation",
-      },
-    });
+    log(client, "debug", "Auto-flushing beads database after mutation");
     await $`bd sync --flush-only`.quiet();
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Beads database auto-flushed successfully",
-      },
-    });
+    log(client, "debug", "Beads database auto-flushed successfully");
   } catch (err) {
     // Silent fail - sync errors are non-blocking
-    await client.app.log({
-      body: {
-        service: "beads-plugin",
-        level: "debug",
-        message: "Beads auto-flush failed (non-blocking)",
-        extra: { error: err instanceof Error ? err.message : String(err) },
-      },
-    });
+    log(
+      client,
+      "debug",
+      `Beads auto-flush failed (non-blocking): ${err instanceof Error ? err.message : String(err)}`
+    );
   }
 }
 
@@ -254,17 +200,11 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
 
   const [commands, agents] = await Promise.all([loadCommands(), loadAgent()]);
 
-  await client.app.log({
-    body: {
-      service: "beads-plugin",
-      level: "debug",
-      message: "Beads plugin loaded",
-      extra: {
-        commands: Object.keys(commands).length,
-        agents: Object.keys(agents).length,
-      },
-    },
-  });
+  log(
+    client,
+    "debug",
+    `Beads plugin loaded with ${Object.keys(commands).length} commands and ${Object.keys(agents).length} agents`
+  );
 
   const injectedSessions = new Set<string>();
 
@@ -292,30 +232,17 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
 
           if (hasBeadsContext) {
             injectedSessions.add(sessionID);
-            await client.app.log({
-              body: {
-                service: "beads-plugin",
-                level: "debug",
-                message: "Beads context already present, skipping",
-                extra: { sessionID },
-              },
-            });
+            log(client, "info", `Beads context already present in ${sessionID}, skipping`);
             return;
           }
         }
       } catch (err) {
         // On error, proceed with injection
-        await client.app.log({
-          body: {
-            service: "beads-plugin",
-            level: "debug",
-            message: "Error checking existing context, proceeding",
-            extra: {
-              sessionID,
-              error: err instanceof Error ? err.message : String(err),
-            },
-          },
-        });
+        log(
+          client,
+          "debug",
+          `Error checking existing context for ${sessionID}, proceeding: ${err instanceof Error ? err.message : String(err)}`
+        );
       }
 
       injectedSessions.add(sessionID);
@@ -334,18 +261,14 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       if (input.tool !== "bash") return;
 
       // Check if the command mutates the issue database
-      // The output.output contains the result, we need to check the original args
-      // The tool args are passed to the tool and the output contains the result
-      const commandOutput = String(output.output ?? "");
-      if (isMutatingCommand(commandOutput)) {
-        await client.app.log({
-          body: {
-            service: "beads-plugin",
-            level: "debug",
-            message: "Detected mutating beads command, auto-flushing",
-            extra: { command: commandOutput.split("\n")[0] },
-          },
-        });
+      // Command is available in output.metadata for bash tool
+      const command = String(output.metadata?.command ?? "");
+      if (isMutatingCommand(command)) {
+        log(
+          client,
+          "debug",
+          `Detected mutating beads command, auto-flushing: ${command.split("\n")[0]}`
+        );
         await autoFlushAfterMutation($, client);
       }
     },
@@ -353,14 +276,7 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
     event: async ({ event }) => {
       if (event.type === "session.compacted") {
         const sessionID = event.properties.sessionID;
-        await client.app.log({
-          body: {
-            service: "beads-plugin",
-            level: "debug",
-            message: "Session compacted, re-injecting beads context",
-            extra: { sessionID },
-          },
-        });
+        log(client, "info", `Session ${sessionID} compacted, re-injecting beads context`);
         const context = await getSessionContext(client, sessionID);
         await injectBeadsContext(client, $, sessionID, context);
       }

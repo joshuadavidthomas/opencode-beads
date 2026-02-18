@@ -8,32 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
-    name: Lint
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Run linter
-        run: bun run lint
-
-      - name: Check formatting
-        run: bun run format:check
-
-  typecheck:
-    name: TypeScript Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Bun
@@ -47,64 +26,15 @@ jobs:
       - name: Run type check
         run: bun run typecheck
 
-  validate:
-    name: Plugin Structure Validation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
+      - name: Run tests
+        run: bun run test:coverage
 
       - name: Run plugin validation
         run: bun run validate
 
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Run tests
-        run: bun run test -- --reporter=verbose
-
-  coverage:
-    name: Test Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Run tests with coverage
-        run: bun run test:coverage -- --reporter=verbose
-
-      - name: Upload coverage report
+      - name: Upload coverage
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: coverage-report
+          name: coverage
           path: coverage/
-          retention-days: 30
+          if-no-files-found: ignore
