@@ -19,7 +19,8 @@
   "main": "src/plugin.ts",
   "files": ["src", "vendor", "README.md"],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate": "bun run scripts/validate-plugin.ts"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.148",
