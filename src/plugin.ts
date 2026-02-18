@@ -8,6 +8,7 @@
  * - Commands parsed from beads command definitions
  * - Task agent for autonomous issue completion
  * - Auto-flush after mutating beads operations
+ * - Structured logging and health checks
  */
 
 import type { Plugin, PluginInput } from "@opencode-ai/plugin";
@@ -45,6 +46,18 @@ function isMutatingBeadsCommand(command: string): boolean {
     // Check exact match or that command starts with cmd followed by space/end
     return trimmed === cmd || trimmed.startsWith(cmd + " ");
   });
+}
+
+/**
+ * Check if beads CLI is available and working
+ */
+async function checkBeadsHealth($: PluginInput["$"]): Promise<boolean> {
+  try {
+    await $`bd --version`;
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -116,6 +129,8 @@ ${BEADS_GUIDANCE}`;
         parts: [{ type: "text", text: beadsContext, synthetic: true }],
       },
     });
+
+    client.app.log?.("debug", `Injected beads context into session ${sessionID.slice(0, 8)}...`);
   } catch {
     // Silent skip if bd prime fails (not installed or not initialized)
   }
@@ -123,6 +138,14 @@ ${BEADS_GUIDANCE}`;
 
 
 export const BeadsPlugin: Plugin = async ({ client, $ }) => {
+  // Health check on plugin load
+  const isHealthy = await checkBeadsHealth($);
+  if (!isHealthy) {
+    client.app.log?.("warn", "Beads CLI not available. Plugin will not inject context.");
+  } else {
+    client.app.log?.("info", "Beads plugin initialized successfully.");
+  }
+
   const [commands, agents] = await Promise.all([loadCommands(), loadAgent()]);
 
   const injectedSessions = new Set<string>();
@@ -194,8 +217,10 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
         try {
           // Auto-flush beads changes to sync with git
           await $`bd sync --flush-only`;
+          client.app.log?.("info", `Auto-flushed beads changes after: ${command}`);
         } catch {
           // Silent fail - sync is best-effort
+          client.app.log?.("debug", `Auto-flush failed after: ${command}`);
         }
       }
     },
