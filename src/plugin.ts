@@ -7,12 +7,45 @@
  * - Context injection via `bd prime` on session start and after compaction
  * - Commands parsed from beads command definitions
  * - Task agent for autonomous issue completion
+ * - Auto-flush after mutating beads operations
  */
 
 import type { Plugin, PluginInput } from "@opencode-ai/plugin";
 import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
 
 type OpencodeClient = PluginInput["client"];
+
+/**
+ * Mutating bd commands that should trigger auto-flush
+ */
+const MUTATING_COMMANDS = [
+  "bd create",
+  "bd update",
+  "bd close",
+  "bd reopen",
+  "bd dep add",
+  "bd delete",
+  "bd label add",
+  "bd label remove",
+  "bd comments add",
+  "bd audit record",
+  "bd audit label",
+  "bd rename-prefix",
+  "bd compact",
+  "bd import",
+];
+
+/**
+ * Check if a command is a mutating beads operation
+ * Uses word boundary matching to avoid false positives (e.g., "bd create-report" shouldn't match)
+ */
+function isMutatingBeadsCommand(command: string): boolean {
+  const trimmed = command.trim();
+  return MUTATING_COMMANDS.some((cmd) => {
+    // Check exact match or that command starts with cmd followed by space/end
+    return trimmed === cmd || trimmed.startsWith(cmd + " ");
+  });
+}
 
 /**
  * Get the current model/agent context for a session by querying messages.
@@ -147,6 +180,24 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
     config: async (config) => {
       config.command = { ...config.command, ...commands };
       config.agent = { ...config.agent, ...agents };
+    },
+
+    "tool.execute.after": async (input, output) => {
+      // Only check bash tool executions
+      if (input.tool !== "bash") return;
+
+      const command = (input as any).arguments?.command;
+      if (typeof command !== "string") return;
+
+      // Check if this was a mutating beads command
+      if (isMutatingBeadsCommand(command)) {
+        try {
+          // Auto-flush beads changes to sync with git
+          await $`bd sync --flush-only`;
+        } catch {
+          // Silent fail - sync is best-effort
+        }
+      }
     },
   };
 };
