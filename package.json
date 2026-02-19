@@ -19,17 +19,25 @@
   "main": "src/plugin.ts",
   "files": ["src", "vendor", "README.md"],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^1.0.143",
-    "@opencode-ai/sdk": "^1.0.143",
-    "zod": "^4.1.13"
+    "@opencode-ai/plugin": "^1.0.148",
+    "@opencode-ai/sdk": "^1.0.148"
   },
   "devDependencies": {
+    "@eslint/js": "^9.x",
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
-    "typescript": "~5.9.3"
+    "eslint": "^9.x",
+    "eslint-config-prettier": "^10.x",
+    "prettier": "^3.x",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.x"
   },
   "engines": {
     "bun": ">=1.0.0"
