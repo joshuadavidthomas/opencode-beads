@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.5.2]
+
 ### Removed
 
 - Removed obsolete `bd sync` reference from CLI usage guidance injected into agent context
