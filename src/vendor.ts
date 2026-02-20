@@ -104,7 +104,6 @@ Instead, use the \`bash\` tool for all beads operations:
 - \`bd list --status open --json\` - List issues
 - \`bd blocked --json\` - Show blocked issues
 - \`bd stats --json\` - Show statistics
-- \`bd sync\` - Sync with git
 
 If a tool is not listed above, try \`bd <tool> --help\`.
 
