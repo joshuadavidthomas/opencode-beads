@@ -7,12 +7,58 @@
  * - Context injection via `bd prime` on session start and after compaction
  * - Commands parsed from beads command definitions
  * - Task agent for autonomous issue completion
+ * - Auto-flush after mutating beads operations
+ * - Structured logging and health checks
  */
 
 import type { Plugin, PluginInput } from "@opencode-ai/plugin";
 import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
 
 type OpencodeClient = PluginInput["client"];
+
+/**
+ * Mutating bd commands that should trigger auto-flush
+ */
+const MUTATING_COMMANDS = [
+  "bd create",
+  "bd update",
+  "bd close",
+  "bd reopen",
+  "bd dep add",
+  "bd delete",
+  "bd label add",
+  "bd label remove",
+  "bd comments add",
+  "bd audit record",
+  "bd audit label",
+  "bd rename-prefix",
+  "bd compact",
+  "bd import",
+];
+
+/**
+ * Check if a command is a mutating beads operation
+ * Uses word boundary matching to avoid false positives (e.g., "bd create-report" shouldn't match)
+ */
+function isMutatingBeadsCommand(command: string): boolean {
+  const trimmed = command.trim();
+  return MUTATING_COMMANDS.some((cmd) => {
+    // Check exact match or that command starts with cmd followed by space/end
+    return trimmed === cmd || trimmed.startsWith(cmd + " ");
+  });
+}
+
+/**
+ * Check if beads CLI is available and working
+ */
+async function checkBeadsHealth($: PluginInput["$"]): Promise<boolean> {
+  try {
+    await $`bd --version`;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Get the current model/agent context for a session by querying messages.
@@ -83,6 +129,14 @@ ${BEADS_GUIDANCE}`;
         parts: [{ type: "text", text: beadsContext, synthetic: true }],
       },
     });
+
+    client.app.log?.({
+      body: {
+        service: "beads",
+        level: "debug",
+        message: `Injected beads context into session ${sessionID.slice(0, 8)}...`,
+      },
+    });
   } catch {
     // Silent skip if bd prime fails (not installed or not initialized)
   }
@@ -90,12 +144,35 @@ ${BEADS_GUIDANCE}`;
 
 
 export const BeadsPlugin: Plugin = async ({ client, $ }) => {
+  // Health check on plugin load
+  const isHealthy = await checkBeadsHealth($);
+  if (!isHealthy) {
+    client.app.log?.({
+      body: {
+        service: "beads",
+        level: "warn",
+        message: "Beads CLI not available. Plugin will not inject context.",
+      },
+    });
+  } else {
+    client.app.log?.({
+      body: {
+        service: "beads",
+        level: "info",
+        message: "Beads plugin initialized successfully.",
+      },
+    });
+  }
+
   const [commands, agents] = await Promise.all([loadCommands(), loadAgent()]);
 
   const injectedSessions = new Set<string>();
 
   return {
     "chat.message": async (_input, output) => {
+      // Skip if beads is not healthy
+      if (!isHealthy) return;
+
       const sessionID = output.message.sessionID;
 
       // Skip if already injected this session
@@ -147,6 +224,50 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
     config: async (config) => {
       config.command = { ...config.command, ...commands };
       config.agent = { ...config.agent, ...agents };
+    },
+
+    "tool.execute.after": async (input, _output) => {
+      // Only check bash tool executions
+      if (input.tool !== "bash") return;
+
+      const command = (input as any).arguments?.command;
+      if (typeof command !== "string") return;
+
+      // Check if this was a mutating beads command
+      if (isMutatingBeadsCommand(command)) {
+        // Verify the command succeeded before flushing
+        if ((_output as any)?.error) {
+          client.app.log?.({
+            body: {
+              service: "beads",
+              level: "debug",
+              message: `Skipping auto-flush - command failed: ${command}`,
+            },
+          });
+          return;
+        }
+
+        try {
+          // Auto-flush beads changes to sync with git
+          await $`bd sync --flush-only`;
+          client.app.log?.({
+            body: {
+              service: "beads",
+              level: "info",
+              message: `Auto-flushed beads changes after: ${command}`,
+            },
+          });
+        } catch {
+          // Silent fail - sync is best-effort
+          client.app.log?.({
+            body: {
+              service: "beads",
+              level: "debug",
+              message: `Auto-flush failed after: ${command}`,
+            },
+          });
+        }
+      }
     },
   };
 };
