@@ -3,7 +3,7 @@
 [Beads](https://github.com/steveyegge/beads) issue tracker integration for [OpenCode](https://opencode.ai).
 
 > [!NOTE]
-> This plugin is intentionally small in scope. It defers to upstream — primarily [beads](https://github.com/steveyegge/beads), but also [OpenCode](https://opencode.ai) — and aims for minimal churn. Maintenance is limited to bug fixes and syncing vendor content from upstream beads. Feature requests and additional customization are generally out of scope. If you want to customize behavior, the plugin surface area is small — forking or copying it locally is encouraged.
+> This plugin is intentionally small in scope. It defers to upstream [beads](https://github.com/steveyegge/beads) and aims for minimal churn. Maintenance is limited to bug fixes and syncing vendor content from upstream beads. Feature requests and additional customization are generally out of scope. If you want to customize behavior, the plugin surface area is small — forking or copying it locally is encouraged.
 
 ## Installation
 
