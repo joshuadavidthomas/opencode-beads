@@ -14,7 +14,7 @@ Use `/beads:ready` or the `ready` MCP tool to see tasks with no blockers.
 ## 2. Claim Your Task
 Claim the issue atomically (assignee + `in_progress` in one step):
 - Via command: `/beads:update <id> --claim`
-- Via MCP tool: `update` with `status: "in_progress"`
+- Via MCP tool: `claim` with `issue_id: "<id>"`
 
 ## 3. Work on It
 Implement, test, and document the feature or fix.
@@ -39,8 +39,7 @@ After closing, check if other work became ready:
 - **Priority levels**: 0=critical, 1=high, 2=medium, 3=low, 4=backlog
 - **Issue types**: bug, feature, task, epic, chore
 - **Dependencies**: Use `blocks` for hard dependencies, `related` for soft links
-- **Auto-sync**: Changes automatically export to `.beads/issues.jsonl` (5-second debounce)
-- **Git workflow**: After `git pull`, JSONL auto-imports if newer than DB
+- **Auto-sync**: Changes are stored in Dolt and synced via `bd sync`
 
 ## Available Commands
 - `/beads:ready` - Find unblocked work
@@ -52,7 +51,7 @@ After closing, check if other work became ready:
 
 ## MCP Tools Available
 Use these via the beads MCP server:
-- `ready`, `list`, `show`, `create`, `update`, `close`
+- `ready`, `list`, `show`, `create`, `claim`, `update`, `close`
 - `dep` (manage dependencies), `blocked`, `stats`
 - `init` (initialize bd in a project)
 
