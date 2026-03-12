@@ -14,6 +14,9 @@ import { BEADS_GUIDANCE, loadAgent, loadCommands } from "./vendor";
 
 type OpencodeClient = PluginInput["client"];
 
+/** Name of the plugin's own task agent. Always receives beads context. */
+const BEADS_TASK_AGENT = "beads-task-agent";
+
 /**
  * Get the current model/agent context for a session by querying messages.
  *
@@ -94,12 +97,47 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
 
   const injectedSessions = new Set<string>();
 
+  /**
+   * Check if an agent should receive beads context injection.
+   *
+   * Queries the agent list from OpenCode and checks whether the agent is a
+   * subagent. Subagents (like `explore` and `general`) are invoked for
+   * specific tasks and shouldn't be polluted with beads context — it wastes
+   * tokens and can cause them to attempt pointless bd/git operations.
+   *
+   * Primary agents (`build`, `plan`) are user-facing and benefit from issue
+   * awareness. The plugin's own `beads-task-agent` is an explicit exception.
+   *
+   * Queries fresh each time rather than caching, since agents can change
+   * mid-session (config edits, other plugins). This only runs once per
+   * session (gated by injectedSessions), so the overhead is negligible.
+   */
+  async function shouldInject(agentName: string | undefined): Promise<boolean> {
+    if (!agentName || agentName === BEADS_TASK_AGENT) return true;
+
+    const response = await client.app.agents().catch(() => undefined);
+    const agent = response?.data?.find((a) => a.name === agentName);
+    if (agent) {
+      return agent.mode === "primary" || agent.mode === "all";
+    }
+
+    // Query failed or agent not in the list — inject as safe fallback
+    return true;
+  }
+
   return {
     "chat.message": async (_input, output) => {
       const sessionID = output.message.sessionID;
 
       // Skip if already injected this session
       if (injectedSessions.has(sessionID)) return;
+
+      // Skip subagents — they're invoked for specific tasks and shouldn't
+      // waste tokens on beads context (except our own beads-task-agent)
+      if (!(await shouldInject(output.message.agent))) {
+        injectedSessions.add(sessionID);
+        return;
+      }
 
       // Check if beads-context was already injected (handles plugin reload/reconnection)
       try {
@@ -140,6 +178,10 @@ export const BeadsPlugin: Plugin = async ({ client, $ }) => {
       if (event.type === "session.compacted") {
         const sessionID = event.properties.sessionID;
         const context = await getSessionContext(client, sessionID);
+
+        // Skip re-injection for subagents
+        if (!(await shouldInject(context?.agent))) return;
+
         await injectBeadsContext(client, $, sessionID, context);
       }
     },

@@ -22,6 +22,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 - Synced vendored beads files to v0.60.0
 
+### Changed
+
+- Skip beads context injection for subagents (`explore`, `general`, etc.)
+
 ## [0.5.5]
 
 ### Changed
