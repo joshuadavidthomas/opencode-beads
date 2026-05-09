@@ -18,6 +18,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Changed
+
+- Updated injected CLI guidance to show default `bd` output, using `--json` when structured output makes a task easier or more reliable.
+
 ## [0.6.0]
 
 ### Changed

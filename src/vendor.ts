@@ -94,20 +94,20 @@ const BEADS_CLI_USAGE = `## CLI Usage
 Instead, use the \`bash\` tool for all beads operations:
 
 - \`bd init [prefix]\` - Initialize beads
-- \`bd ready --json\` - List ready tasks
-- \`bd show <id> --json\` - Show task details
-- \`bd create "title" -t bug|feature|task -p 0-4 --json\` - Create issue
-- \`bd update <id> --status in_progress --json\` - Update status
-- \`bd close <id> --reason "message" --json\` - Close issue
-- \`bd reopen <id> --json\` - Reopen issue
-- \`bd dep add <from> <to> --type blocks|discovered-from --json\` - Add dependency
-- \`bd list --status open --json\` - List issues
-- \`bd blocked --json\` - Show blocked issues
-- \`bd stats --json\` - Show statistics
+- \`bd ready\` - List ready tasks
+- \`bd show <id>\` - Show task details
+- \`bd create "title" -t bug|feature|task -p 0-4\` - Create issue
+- \`bd update <id> --status in_progress\` - Update status
+- \`bd close <id> --reason "message"\` - Close issue
+- \`bd reopen <id>\` - Reopen issue
+- \`bd dep add <from> <to> --type blocks|discovered-from\` - Add dependency
+- \`bd list --status open\` - List issues
+- \`bd blocked\` - Show blocked issues
+- \`bd stats\` - Show statistics
 
 If a tool is not listed above, try \`bd <tool> --help\`.
 
-Always use \`--json\` flag for structured output.`;
+Use the default command output unless \`--json\` would make a task easier or more reliable. If you parse command output, distinguish parsing errors from command failures.`;
 
 const BEADS_SUBAGENT_CONTEXT = `## Subagent Context
 
