@@ -21,6 +21,7 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 ### Changed
 
 - Updated injected CLI guidance to show default `bd` output, using `--json` when structured output makes a task easier or more reliable.
+- Synced vendored beads files to v1.0.3
 
 ## [0.6.0]
 
