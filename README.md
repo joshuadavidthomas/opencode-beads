@@ -33,7 +33,7 @@ Optionally, pin to a specific version for stability:
 
 ```json
 {
-  "plugin": ["opencode-beads@0.7.0"]
+  "plugin": ["opencode-beads@0.8.0"]
 }
 ```
 
