@@ -18,6 +18,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+### Changed
+
+- Synced vendored beads files to v1.3.0-rc.1
+
 ## [0.8.0]
 
 ### Changed
