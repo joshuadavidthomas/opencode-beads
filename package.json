@@ -17,13 +17,16 @@
     "ai"
   ],
   "main": "src/plugin.ts",
-  "files": ["src", "vendor", "README.md"],
+  "files": [
+    "src",
+    "vendor",
+    "README.md"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^1.0.143",
-    "@opencode-ai/sdk": "^1.0.143",
+    "@opencode/plugin": "^2.0.24",
     "zod": "^4.1.13"
   },
   "devDependencies": {
