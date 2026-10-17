@@ -36,3 +36,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 !CLAUDE.md
 
 .npmrc
+
+# Amp orb portals
+.amp/portals/*

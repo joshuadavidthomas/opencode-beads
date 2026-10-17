@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Prepares an Amp orb for this repository: Bun dependencies and the bd (beads) CLI.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# Match the beads version recorded in .beads/.local_version; bd 1.x uses a different storage backend.
+BD_VERSION="0.44.0"
+BIN_DIR="$HOME/.local/bin"
+
+step() {
+  local name="$1"
+  shift
+  local start=$SECONDS
+  echo "==> $name"
+  "$@"
+  echo "<== $name ($((SECONDS - start))s)"
+}
+
+install_bun() {
+  if command -v bun >/dev/null 2>&1; then
+    echo "bun $(bun --version) already installed"
+    return
+  fi
+  if ! command -v unzip >/dev/null 2>&1; then
+    sudo apt-get update -qq && sudo apt-get install -y -qq unzip
+  fi
+  curl -fsSL https://bun.sh/install | bash
+  ln -sf "$HOME/.bun/bin/bun" "$BIN_DIR/bun"
+}
+
+install_bd() {
+  if [[ -x "$BIN_DIR/bd" ]] && "$BIN_DIR/bd" version 2>/dev/null | grep -Fq "$BD_VERSION"; then
+    echo "bd $BD_VERSION already installed"
+    return
+  fi
+  local arch
+  case "$(uname -m)" in
+    x86_64) arch=amd64 ;;
+    aarch64 | arm64) arch=arm64 ;;
+    *) echo "unsupported architecture: $(uname -m)" >&2; return 1 ;;
+  esac
+  local asset="beads_${BD_VERSION}_linux_${arch}.tar.gz"
+  local base="https://github.com/steveyegge/beads/releases/download/v${BD_VERSION}"
+  local tmp
+  tmp="$(mktemp -d)"
+  curl -fsSL -o "$tmp/$asset" "$base/$asset"
+  curl -fsSL -o "$tmp/checksums.txt" "$base/checksums.txt"
+  (cd "$tmp" && grep -F " $asset" checksums.txt | sha256sum -c -)
+  tar -xzf "$tmp/$asset" -C "$tmp" bd
+  install -m 0755 "$tmp/bd" "$BIN_DIR/bd"
+  rm -rf "$tmp"
+  "$BIN_DIR/bd" version
+}
+
+# bd runs in JSONL-only mode so it reads and writes the tracked .beads/issues.jsonl directly.
+# Its SQLite import path rewrites existing issues and `bd init` edits tracked files.
+configure_bd_env() {
+  local marker="# opencode-beads: bd JSONL-only mode"
+  if ! grep -Fqx "$marker" "$HOME/.bash_profile" 2>/dev/null; then
+    cat >> "$HOME/.bash_profile" <<'PROFILE'
+
+# opencode-beads: bd JSONL-only mode
+export BD_NO_DB=true
+export BD_ISSUE_PREFIX=opencode-beads
+PROFILE
+  fi
+
+  local exclude=.git/info/exclude
+  if [[ -f "$exclude" ]] && ! grep -Fqx ".beads/last-touched" "$exclude"; then
+    echo ".beads/last-touched" >> "$exclude"
+  fi
+
+  local guidance="$HOME/.config/amp/AGENTS.md"
+  local guidance_marker="## opencode-beads orb notes"
+  mkdir -p "$(dirname "$guidance")"
+  if ! grep -Fqx "$guidance_marker" "$guidance" 2>/dev/null; then
+    cat >> "$guidance" <<'GUIDANCE'
+
+## opencode-beads orb notes
+
+- `bd` 0.44.0 is installed and login shells export `BD_NO_DB=true` and `BD_ISSUE_PREFIX=opencode-beads`, so `bd` works directly on `.beads/issues.jsonl` with no SQLite database or daemon.
+- Do not run `bd init` or `bd import` here: they edit tracked files (AGENTS.md, `.beads/.gitignore`) and rewrite existing issues.
+GUIDANCE
+  fi
+}
+
+mkdir -p "$BIN_DIR"
+export PATH="$BIN_DIR:$PATH"
+
+step "bun" install_bun
+step "bd" install_bd
+step "bd environment" configure_bd_env
+step "bun install" bun install --frozen-lockfile
