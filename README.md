@@ -9,6 +9,10 @@
 >
 > If you want to customize behavior, the plugin surface area is small — forking or copying it locally is encouraged.
 
+## Requirements
+
+- [OpenCode](https://opencode.ai/) v2.1.2 or later (opencode-beads v0.8.0 is the last release for OpenCode v1)
+
 ## Installation
 
 Install the beads CLI:
@@ -23,7 +27,7 @@ Add to your OpenCode config (`~/.config/opencode/opencode.json`):
 
 ```json
 {
-  "plugin": ["opencode-beads"]
+  "plugins": ["opencode-beads"]
 }
 ```
 
@@ -33,7 +37,7 @@ Optionally, pin to a specific version for stability:
 
 ```json
 {
-  "plugin": ["opencode-beads@0.8.0"]
+  "plugins": ["opencode-beads@0.9.0"]
 }
 ```
 
@@ -41,7 +45,7 @@ OpenCode fetches unpinned plugins from npm on each startup; pinned versions are 
 
 ## Features
 
-- **Context injection** - Automatically runs `bd prime` on session start and after compaction, keeping your agent aware of current issues
+- **Context injection** - Automatically runs `bd prime` once per session and adds its output to the system prompt, where it survives compaction
 - **Commands** - All beads operations available as `/bd-*` commands
 - **Task agent** - Autonomous issue completion via `beads-task-agent` subagent
 
@@ -49,7 +53,7 @@ OpenCode fetches unpinned plugins from npm on each startup; pinned versions are 
 
 This plugin brings beads into OpenCode. For learning how to use beads itself - workflows, commands, best practices - see the [beads documentation](https://github.com/steveyegge/beads).
 
-The plugin automatically injects beads context on session start and after compaction, so your agent stays oriented.
+The plugin automatically adds beads context to the system prompt of primary agents (and `beads-task-agent`), so your agent stays oriented, including after compaction. Other subagents don't receive it.
 
 ## Commands
 

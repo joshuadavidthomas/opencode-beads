@@ -3,7 +3,8 @@
 ## Commands
 - **Typecheck**: `bun run typecheck`
 - **Install deps**: `bun install`
-- No tests configured
+- **Test**: `bun test`
+- **Build**: `bun run build` (compiles `index.ts` to `dist/`, which is what npm ships)
 
 ## Code Style
 - TypeScript strict mode with ESM modules
@@ -15,7 +16,8 @@
 - Async/await for async operations
 
 ## Project Structure
-- `src/plugin.ts` - Main plugin entry point
+- `index.ts` - Package entry point, re-exports the plugin
+- `src/plugin.ts` - Plugin implementation (OpenCode v2 `@opencode/plugin` API)
 - `src/vendor.ts` - Vendor file loaders
 - `vendor/` - Synced content from upstream beads repo (commands, agents)
 

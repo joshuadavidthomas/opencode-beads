@@ -8,7 +8,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Config } from "@opencode-ai/sdk";
 
 function getVendorDir(): string {
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -150,28 +149,33 @@ ${BEADS_CLI_USAGE}
 **Why delegate?** The agent processes multiple commands internally and returns only a concise summary. Running bd commands directly dumps hundreds of lines of raw JSON into context, wasting tokens and making the conversation harder to follow.
 </beads-guidance>`;
 
-export async function loadAgent(): Promise<Config["agent"]> {
+export interface VendorAgent {
+  description: string;
+  system: string;
+}
+
+export interface VendorCommand {
+  name: string;
+  description: string;
+  template: string;
+}
+
+export async function loadAgent(): Promise<VendorAgent | undefined> {
   const content = await readVendorFile("agents/task-agent.md");
-  if (!content) return {};
+  if (!content) return undefined;
 
   const parsed = parseMarkdownWithFrontmatter(content);
-  if (!parsed) return {};
-
-  const description =
-    parsed.frontmatter.description ?? "Beads task completion agent";
+  if (!parsed) return undefined;
 
   return {
-    "beads-task-agent": {
-      description,
-      prompt: BEADS_CLI_USAGE + "\n\n" + BEADS_SUBAGENT_CONTEXT + "\n\n" + parsed.body,
-      mode: "subagent",
-    },
+    description: parsed.frontmatter.description ?? "Beads task completion agent",
+    system: BEADS_CLI_USAGE + "\n\n" + BEADS_SUBAGENT_CONTEXT + "\n\n" + parsed.body,
   };
 }
 
-export async function loadCommands(): Promise<Config["command"]> {
+export async function loadCommands(): Promise<VendorCommand[]> {
   const files = await listVendorFiles("commands");
-  const commands: Config["command"] = {};
+  const commands: VendorCommand[] = [];
 
   for (const file of files) {
     if (!file.endsWith(".md")) continue;
@@ -179,8 +183,11 @@ export async function loadCommands(): Promise<Config["command"]> {
     const content = await readVendorFile(`commands/${file}`);
     if (!content) continue;
 
-    const parsed = parseMarkdownWithFrontmatter(content);
-    if (!parsed) continue;
+    // Some upstream commands have no frontmatter; their whole file is the template.
+    const parsed = parseMarkdownWithFrontmatter(content) ?? {
+      frontmatter: {},
+      body: content.trim(),
+    };
 
     const name = `beads:${file.replace(".md", "")}`;
 
@@ -190,10 +197,7 @@ export async function loadCommands(): Promise<Config["command"]> {
       ? `${baseDescription} (${argHint})`
       : baseDescription;
 
-    commands[name] = {
-      description,
-      template: parsed.body,
-    };
+    commands.push({ name, description, template: parsed.body });
   }
 
   return commands;

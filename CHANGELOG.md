@@ -20,7 +20,19 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ### Changed
 
+- **Breaking:** Ported to the OpenCode v2 plugin API. Requires OpenCode v2.1.2 or later; use v0.8.0 with OpenCode v1. Configure the plugin under `plugins` instead of `plugin`.
+- Beads context is now added to the system prompt instead of being sent as a chat message. `bd prime` runs once per session; the context survives compaction, so it is no longer re-injected afterwards.
+- Command arguments are expanded the same way OpenCode expands its own commands: `$1`, `$2`, ... take positional arguments, and arguments are appended to templates without placeholders.
+- The package now ships compiled JavaScript from `dist`.
 - Synced vendored beads files to v1.3.0-rc.1
+
+### Fixed
+
+- Vendor commands without frontmatter (`/beads:prime`, `/beads:template`) are now registered.
+
+### Removed
+
+- Dependencies on `@opencode-ai/plugin`, `@opencode-ai/sdk`, and `zod`.
 
 ## [0.8.0]
 
