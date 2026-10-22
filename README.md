@@ -46,7 +46,7 @@ OpenCode fetches unpinned plugins from npm on each startup; pinned versions are 
 ## Features
 
 - **Context injection** - Automatically runs `bd prime` once per session and adds its output to the system prompt, where it survives compaction
-- **Commands** - All beads operations available as `/bd-*` commands
+- **Commands** - All beads operations available as `/beads:*` commands
 - **Task agent** - Autonomous issue completion via `beads-task-agent` subagent
 
 ## Usage
@@ -57,7 +57,7 @@ The plugin automatically adds beads context to the system prompt of primary agen
 
 ## Commands
 
-Commands are available as `/bd-*` and mirror the `bd` CLI. See the [beads documentation](https://github.com/steveyegge/beads) for the full command reference.
+Commands are available as `/beads:*` (for example, `/beads:ready` or `/beads:create`) and mirror the `bd` CLI. See the [beads documentation](https://github.com/steveyegge/beads) for the full command reference.
 
 ## Agent
 
