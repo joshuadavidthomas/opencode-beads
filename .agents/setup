@@ -41,7 +41,7 @@ install_bd() {
     *) echo "unsupported architecture: $(uname -m)" >&2; return 1 ;;
   esac
   local asset="beads_${BD_VERSION}_linux_${arch}.tar.gz"
-  local base="https://github.com/steveyegge/beads/releases/download/v${BD_VERSION}"
+  local base="https://github.com/gastownhall/beads/releases/download/v${BD_VERSION}"
   local tmp
   tmp="$(mktemp -d)"
   curl -fsSL -o "$tmp/$asset" "$base/$asset"

@@ -1,9 +1,9 @@
 # opencode-beads
 
-[Beads](https://github.com/steveyegge/beads) issue tracker integration for [OpenCode](https://opencode.ai).
+[Beads](https://github.com/gastownhall/beads) issue tracker integration for [OpenCode](https://opencode.ai).
 
 > [!NOTE]
-> This plugin is intentionally small in scope. The [beads](https://github.com/steveyegge/beads) project is moving quickly and is a moving target — any additional layers on top of it add churn.
+> This plugin is intentionally small in scope. The [beads](https://github.com/gastownhall/beads) project is moving quickly and is a moving target — any additional layers on top of it add churn.
 >
 > To minimize maintenance, this plugin defers to beads and limits its scope to bug fixes and syncing upstream vendor plugin content. Feature requests and additional customization are generally out of scope.
 >
@@ -18,10 +18,10 @@
 Install the beads CLI:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/gastownhall/beads/main/scripts/install.sh | bash
 ```
 
-See the [beads installation guide](https://github.com/steveyegge/beads/blob/main/docs/INSTALLING.md) for alternative methods (Homebrew, Windows, AUR, etc.).
+See the [beads installation guide](https://github.com/gastownhall/beads/blob/main/docs/getting-started/installation.md) for alternative methods (Homebrew, npm, Windows, etc.).
 
 Add to your OpenCode config (`~/.config/opencode/opencode.json`):
 
@@ -51,13 +51,13 @@ OpenCode fetches unpinned plugins from npm on each startup; pinned versions are 
 
 ## Usage
 
-This plugin brings beads into OpenCode. For learning how to use beads itself - workflows, commands, best practices - see the [beads documentation](https://github.com/steveyegge/beads).
+This plugin brings beads into OpenCode. For learning how to use beads itself - workflows, commands, best practices - see the [beads documentation](https://github.com/gastownhall/beads).
 
 The plugin automatically adds beads context to the system prompt of primary agents (and `beads-task-agent`), so your agent stays oriented, including after compaction. Other subagents don't receive it.
 
 ## Commands
 
-Commands are available as `/beads:*` (for example, `/beads:ready` or `/beads:create`) and mirror the `bd` CLI. See the [beads documentation](https://github.com/steveyegge/beads) for the full command reference.
+Commands are available as `/beads:*` (for example, `/beads:ready` or `/beads:create`) and mirror the `bd` CLI. See the [beads documentation](https://github.com/gastownhall/beads) for the full command reference.
 
 ## Agent
 
