@@ -5,7 +5,7 @@ set -euo pipefail
 DRY_RUN=false
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
 
-BEADS_REPO="https://github.com/steveyegge/beads.git"
+BEADS_REPO="https://github.com/gastownhall/beads.git"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_DIR="$(dirname "$SCRIPT_DIR")"
 
